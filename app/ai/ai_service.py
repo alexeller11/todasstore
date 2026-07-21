@@ -16,7 +16,7 @@ def _get_client():
         raise RuntimeError(
             "A chave da IA (GROQ_API_KEY) não está configurada! Por favor, adicione-a no arquivo .env."
         )
-    return Groq(api_key=api_key)
+    return Groq(api_key=api_key, max_retries=2, timeout=20.0)
 
 
 def _chamar_modelo(mensagens, json_mode=True, temperatura=0.8):
@@ -38,11 +38,7 @@ def _chamar_modelo(mensagens, json_mode=True, temperatura=0.8):
             )
             if json_mode:
                 kwargs["response_format"] = {"type": "json_object"}
-            resp = client.chat.completions.create(
-                **kwargs, 
-                timeout=20.0,
-                max_retries=2
-            )
+            resp = client.chat.completions.create(**kwargs)
             return resp.choices[0].message.content
         except Exception as e:
             current_app.logger.warning(f"Erro ao chamar modelo {modelo}: {e}")
