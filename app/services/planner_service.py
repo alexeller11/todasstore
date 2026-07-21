@@ -10,7 +10,7 @@ from app.extensions import db
 from app.models import Mes, Semana, Dia, ChecklistItem, Loja
 from app.ai import ai_service, prompts
 from app.services.checklist_service import criar_checklist_padrao
-from app.services.datas_comemorativas import datas_da_semana
+from app.services.datas_comemorativas import datas_da_semana, estacao_do_ano, datas_proximas
 
 NOMES_MESES = [
     "", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -68,9 +68,10 @@ def gerar_planejamento_semana(semana_id):
     loja = Loja.query.first()
 
     datas_especiais = datas_da_semana(semana.data_inicio, semana.data_fim)
+    estacao = estacao_do_ano(semana.data_inicio)
 
     system_prompt, user_prompt = prompts.prompt_planejamento_semana(
-        loja, semana.data_inicio.strftime("%d/%m/%Y"), datas_especiais, semana.promocao
+        loja, semana.data_inicio.strftime("%d/%m/%Y"), datas_especiais, semana.promocao, estacao
     )
     resultado = ai_service.gerar_json(system_prompt, user_prompt)
 
@@ -100,7 +101,13 @@ def gerar_nova_ideia_dia(dia_id, tipo):
     dia = Dia.query.get_or_404(dia_id)
     loja = Loja.query.first()
 
-    system_prompt, user_prompt = prompts.prompt_nova_ideia_dia(loja, dia.dia_semana, tipo)
+    estacao = estacao_do_ano(dia.data)
+    datas_perto = datas_proximas(dia.data)
+
+    system_prompt, user_prompt = prompts.prompt_nova_ideia_dia(
+        loja, dia.dia_semana, tipo,
+        data=dia.data.strftime("%d/%m/%Y"), estacao=estacao, datas_proximas=datas_perto,
+    )
     resultado = ai_service.gerar_json(system_prompt, user_prompt)
 
     campo_ideia = {"story": "ideia_story", "reels": "ideia_reels", "feed": "ideia_feed"}.get(tipo)
