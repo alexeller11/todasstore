@@ -23,6 +23,10 @@ def bem_vinda():
         loja.produtos = request.form.get("produtos", "").strip()
         loja.tom_de_voz = request.form.get("tom_de_voz", "").strip()
         loja.objetivos = request.form.get("objetivos", "").strip()
+        # Diferenciais e dores do público sao OPCIONAIS mas fazem a IA gerar
+        # conteúdo muito menos genérico - por isso entram já no onboarding.
+        loja.diferenciais = request.form.get("diferenciais", "").strip()
+        loja.dores_do_publico = request.form.get("dores_do_publico", "").strip()
         loja.onboarding_concluido = True
 
         db.session.commit()

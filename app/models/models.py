@@ -65,6 +65,7 @@ class Dia(db.Model):
     ideia_reels = db.Column(db.Text)
     ideia_feed = db.Column(db.Text)
     legenda = db.Column(db.Text)
+    descricao_visual = db.Column(db.Text)       # cena concreta da foto/vídeo para a lojista
     cta = db.Column(db.String(255))
     formato = db.Column(db.String(80))          # foto, vídeo, carrossel, reels...
     objetivo = db.Column(db.String(120))         # vender, engajar, educar...
@@ -75,6 +76,12 @@ class Dia(db.Model):
     post_feito = db.Column(db.Boolean, default=False)
 
     checklist_items = db.relationship("ChecklistItem", backref="dia", cascade="all, delete-orphan")
+    versoes = db.relationship(
+        "VersaoConteudo",
+        backref="dia",
+        cascade="all, delete-orphan",
+        order_by="VersaoConteudo.criado_em.desc()",
+    )
 
     @property
     def dia_completo(self):
@@ -139,4 +146,25 @@ class InsightSemanal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     semana_id = db.Column(db.Integer, db.ForeignKey("semana.id"))
     texto = db.Column(db.Text)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class VersaoConteudo(db.Model):
+    """Histórico de versões de um conteúdo (story/reels/feed) dentro de um dia.
+
+    Toda vez que a lojista regenera uma ideia (botão "Gerar nova ideia"), a versão
+    atual é preservada aqui ANTES de ser sobrescrita - evitando perder conteúdo bom
+    que foi substituído acidentalmente. Vizualizável na tela do dia e restaurável."""
+    __tablename__ = "versao_conteudo"
+
+    id = db.Column(db.Integer, primary_key=True)
+    dia_id = db.Column(db.Integer, db.ForeignKey("dia.id"), nullable=False)
+    tipo = db.Column(db.String(15), nullable=False)  # story | reels | feed
+    conteudo = db.Column(db.Text)                       # texto da ideia (ideia_story/reels/feed)
+    descricao_visual = db.Column(db.Text)
+    legenda = db.Column(db.Text)
+    cta = db.Column(db.String(255))
+    formato = db.Column(db.String(80))
+    objetivo = db.Column(db.String(120))
+    tempo_estimado = db.Column(db.String(60))
     criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))

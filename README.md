@@ -34,7 +34,7 @@ cp .env.example .env
 # Edite o .env e coloque sua chave gratuita da Groq (https://console.groq.com/keys)
 
 # 5. Rodar o sistema
-python app.py
+python wsgi.py
 ```
 
 Acesse em `http://localhost:5000`. Na primeira vez, o sistema vai pedir para
@@ -98,9 +98,74 @@ terceiros, e ativamente bloqueia leituras automatizadas. Por isso o sistema:
 - Usa a IA para transformar o que foi coletado + as observações manuais em
   insights práticos e sugestões de conteúdo inédito (nunca cópia).
 
-## 7. Próximos passos sugeridos (evolução para SaaS)
+## 7. Banco de dados e migrations (Alembic)
+
+O esquema do banco é controlado por **migrations Alembic** (via `Flask-Migrate`)
+na pasta `migrations/`. As migrations atuais são:
+
+- `0001_baseline_producao`: snapshot do esquema que **já existia** em produção
+  antes das melhorias (todas as tabelas originais).
+- `0002_add_descricao_visual_e_versao_conteudo`: adiciona a coluna
+  `dia.descricao_visual` e a tabela `versao_conteudo` (histórico de versões
+  antes de regenerar conteúdo).
+
+### Em ambiente novo (dev local)
+
+Basta rodar:
+
+```bash
+flask --app wsgi db upgrade
+```
+
+O Alembic aplica todas as migrations, criando o esquema completo do zero.
+Como rede de segurança, `db.create_all()` é chamado no `create_app()` (é
+no-op seguro quando as tabelas já existem).
+
+### Em produção (Render, PostgreSQL já com dados) — ATENÇÃO
+
+**NÃO rode `flask db upgrade` direto.** O banco já existe com o esquema da
+`0001_baseline`. O fluxo correto é:
+
+```bash
+# 1) Marca que a baseline já está aplicada (NÃO executa DDL, só registra):
+flask --app wsgi db stamp 0001_baseline_producao
+
+# 2) Sobe SOMENTE a migration incremental:
+flask --app wsgi db upgrade
+```
+
+Isso adiciona apenas a coluna `descricao_visual` em `dia` e cria a tabela
+`versao_conteudo` — **sem tocar em nenhum dado existente**.
+
+### Ao adicionar uma nova coluna/tabela no models.py
+
+```bash
+flask --app wsgi db migrate -m "descreva a mudanca"
+flask --app wsgi db upgrade
+```
+
+Revise o arquivo gerado em `migrations/versions/` antes de subir a upgrade.
+
+## 8. Próximos passos sugeridos (evolução para SaaS)
 
 A arquitetura já separa bem models/routes/services/ai, o que facilita:
 - Adicionar autenticação multi-usuária (várias lojas, cada uma com seus dados).
 - Adicionar um plano pago com limites de geração de IA.
 - Trocar/adicionar outros provedores de IA no `ai_service.py` sem alterar o resto do sistema.
+
+## 9. Novidades nesta versão (melhorias de experiência e persistência)
+
+- ✅ **Bug do checklist resolvido**: ao desmarcar um item, o selo "Story ✅ / Post ✅"
+  agora volta a refletir a realidade (antes ficava preso em verde).
+- ✅ **Botão "Salvar no Banco de Ideias"** em cada card do dia — em 1 clique você
+  preserva um Story/Reels/Feed que gostou (marcado como origem `ia`).
+- ✅ **Histórico de versões por dia**: cada "Gerar nova ideia" preserva a versão
+  anterior. Você pode restaurar versões anteriores direto na tela do dia.
+- ✅ **Promoção da semana agora é considerada ao regerar** um dia específico
+  (antes era esquecida ao clicar em "Gerar nova ideia").
+- ✅ **Prompts menos superficiais**: legenda entre 80–220 palavras + novo campo
+  "Inspiração visual" (cena concreta a fotografar/gravar) + `max_tokens` 4000.
+- ✅ **Onboarding pede diferenciais e dores do público** (opcionais), que é o
+  que mais deixa o conteúdo da IA específico para a sua loja.
+- ✅ **Migrations reais (Alembic)** substituem o patch manual antigo — sem mais
+  "coluna nova some em produção".

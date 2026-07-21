@@ -50,10 +50,21 @@ def ver_dia(dia_id):
 def nova_ideia(dia_id, tipo):
     try:
         planner_service.gerar_nova_ideia_dia(dia_id, tipo)
-        flash("Nova ideia gerada! 🔄", "success")
+        flash("Nova ideia gerada! A versão anterior foi preservada no histórico. 🔄", "success")
     except Exception as e:
         flash(f"Não consegui gerar agora: {e}", "danger")
     return redirect(url_for("planejamento.ver_dia", dia_id=dia_id))
+
+
+@bp.route("/versao/<int:versao_id>/restaurar", methods=["POST"])
+def restaurar_versao(versao_id):
+    try:
+        versao = planner_service.restaurar_versao(versao_id)
+        flash("Versão anterior restaurada! O conteúdo atual foi preservado no histórico. ♻️", "success")
+    except Exception as e:
+        flash(f"Não consegui restaurar: {e}", "danger")
+        return redirect(url_for("planejamento.ver_dia", dia_id=versao.dia_id))
+    return redirect(url_for("planejamento.ver_dia", dia_id=versao.dia_id))
 
 
 @bp.route("/dia/<int:dia_id>/editar", methods=["POST"])

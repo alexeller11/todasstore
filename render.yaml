@@ -4,6 +4,15 @@ services:
     env: python
     plan: free
     buildCommand: "pip install -r requirements.txt"
+    # Antes de subir a nova versão, aplica as migrations Alembic de forma idempotente:
+    # - faz stamp da baseline se for primeira vez (banco legado ainda sem alembic_version)
+    # - depois roda upgrade (só roda as incrementais pendentes)
+    preDeployCommand: "python -c \"import os, sys; from app import create_app; from app.extensions import db; from flask_migrate import stamp, upgrade; a=create_app(); a.app_context().push(); \
+import sqlalchemy; insp=sqlalchemy.inspect(db.engine); \
+tbls=set(insp.get_table_names()); \
+if 'alembic_version' not in tbls and len(tbls) > 0: \
+    print('banco pre-existente sem alembic_version -> stamp na baseline'); stamp(directory='migrations', revision='0001_baseline_producao'); \
+upgrade(directory='migrations')\""
     startCommand: "gunicorn wsgi:app"
     envVars:
       - key: SECRET_KEY

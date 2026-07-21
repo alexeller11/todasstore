@@ -5,41 +5,6 @@ from config import Config
 from app.extensions import db, migrate
 
 
-def _garantir_colunas_novas():
-    """Como o projeto não usa migrations formais (Alembic), db.create_all() só cria
-    tabelas que não existem - não adiciona colunas novas em tabelas já existentes.
-    Esta função cobre esse caso de forma simples e segura para adicionar colunas novas
-    sem apagar dados existentes."""
-    from sqlalchemy import text, inspect
-
-    inspetor = inspect(db.engine)
-    if "semana" not in inspetor.get_table_names():
-        return
-
-    colunas_semana = {c["name"] for c in inspetor.get_columns("semana")}
-    if "promocao" not in colunas_semana:
-        try:
-            db.session.execute(text("ALTER TABLE semana ADD COLUMN promocao TEXT"))
-            db.session.commit()
-        except Exception:
-            db.session.rollback()
-            
-    if "loja" in inspetor.get_table_names():
-        colunas_loja = {c["name"] for c in inspetor.get_columns("loja")}
-        if "diferenciais" not in colunas_loja:
-            try:
-                db.session.execute(text("ALTER TABLE loja ADD COLUMN diferenciais TEXT"))
-                db.session.commit()
-            except Exception:
-                db.session.rollback()
-        if "dores_do_publico" not in colunas_loja:
-            try:
-                db.session.execute(text("ALTER TABLE loja ADD COLUMN dores_do_publico TEXT"))
-                db.session.commit()
-            except Exception:
-                db.session.rollback()
-
-
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -89,7 +54,12 @@ def create_app(config_class=Config):
         return {"loja_atual": loja_atual}
 
     with app.app_context():
+        # Em produção (Render/PostgreSQL) o esquema é controlado por Alembic:
+        # `flask db upgrade` aplica as migrations do diretório migrations/.
+        # db.create_all() aqui é uma rede de segurança para dev local com SQLite
+        # novo (clona direto a partir dos modelos atuais). É NO-OP seguro em
+        # bancos onde as tabelas já existem - tanto via migrations quanto em
+        # bancos legados que serão "stamp"ados.
         db.create_all()
-        _garantir_colunas_novas()
 
     return app

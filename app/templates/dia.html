@@ -6,54 +6,89 @@
 <p class="texto-suave mb-3">{{ dia.data.strftime('%d/%m/%Y') }}</p>
 
 <div class="cartao">
-  <div class="d-flex justify-content-between align-items-start">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
     <h5><i class="bi bi-camera-reels-fill"></i> Ideia de Story</h5>
-    <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='story') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
-        <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
-      </button>
-    </form>
+    <div class="d-flex gap-1">
+      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='story') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+          <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
+        </button>
+      </form>
+      {% if dia.ideia_story %}
+      <form method="POST" action="{{ url_for('banco_ideias.salvar_do_dia', dia_id=dia.id, tipo='story') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);">
+          <i class="bi bi-bookmark-heart"></i> Salvar no Banco 💾
+        </button>
+      </form>
+      {% endif %}
+    </div>
   </div>
   <p class="mt-2" style="white-space: pre-line;">{{ dia.ideia_story or "Nenhuma ideia ainda. Clique em gerar nova ideia!" }}</p>
 </div>
 
 <div class="cartao">
-  <div class="d-flex justify-content-between align-items-start">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
     <h5><i class="bi bi-film"></i> Ideia de Reels</h5>
-    <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='reels') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
-        <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
-      </button>
-    </form>
+    <div class="d-flex gap-1">
+      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='reels') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+          <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
+        </button>
+      </form>
+      {% if dia.ideia_reels %}
+      <form method="POST" action="{{ url_for('banco_ideias.salvar_do_dia', dia_id=dia.id, tipo='reels') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);">
+          <i class="bi bi-bookmark-heart"></i> Salvar no Banco 💾
+        </button>
+      </form>
+      {% endif %}
+    </div>
   </div>
   <p class="mt-2" style="white-space: pre-line;">{{ dia.ideia_reels or "Sem reels planejado para este dia." }}</p>
 </div>
 
 <div class="cartao">
-  <div class="d-flex justify-content-between align-items-start">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
     <h5><i class="bi bi-grid-3x3-gap-fill"></i> Ideia de Feed</h5>
-    <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='feed') }}">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
-        <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
-      </button>
-    </form>
+    <div class="d-flex gap-1">
+      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='feed') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+          <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
+        </button>
+      </form>
+      {% if dia.ideia_feed %}
+      <form method="POST" action="{{ url_for('banco_ideias.salvar_do_dia', dia_id=dia.id, tipo='feed') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);">
+          <i class="bi bi-bookmark-heart"></i> Salvar no Banco 💾
+        </button>
+      </form>
+      {% endif %}
+    </div>
   </div>
   <p class="mt-2" style="white-space: pre-line;">{{ dia.ideia_feed or "Sem post de feed planejado para este dia." }}</p>
 </div>
 
 <div class="cartao">
-  <div class="d-flex justify-content-between align-items-start">
-    <h5><i class="bi bi-chat-heart-fill"></i> Legenda pronta</h5>
-    {% if dia.legenda %}
+  <h5><i class="bi bi-chat-heart-fill"></i> Legenda pronta</h5>
+  {% if dia.legenda %}
+  <div class="d-flex justify-content-end mb-1">
     <button class="btn btn-sm rounded-pill" onclick="navigator.clipboard.writeText(`{{ dia.legenda|replace('\n', '\\n')|replace('\"', '\\\"')|replace('`', '\\`') }}`); this.innerHTML='<i class=\'bi bi-check2\'></i> Copiado!'; setTimeout(()=>this.innerHTML='<i class=\'bi bi-copy\'></i> Copiar', 2000)" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
       <i class="bi bi-copy"></i> Copiar
     </button>
-    {% endif %}
   </div>
+  {% endif %}
   <p class="mt-2" style="white-space: pre-line;">{{ dia.legenda or "Ainda sem legenda." }}</p>
+  {% if dia.descricao_visual %}
+  <p class="mt-3 mb-0 texto-suave" style="font-size:.9rem;">
+    <i class="bi bi-image"></i> <strong>Inspiração visual:</strong> {{ dia.descricao_visual }}
+  </p>
+  {% endif %}
   {% if dia.cta %}<span class="badge-app"><i class="bi bi-megaphone"></i> {{ dia.cta }}</span>{% endif %}
   {% if dia.tempo_estimado %}<span class="badge-app ms-1"><i class="bi bi-clock"></i> {{ dia.tempo_estimado }}</span>{% endif %}
 </div>
@@ -78,6 +113,41 @@
     <input type="text" name="texto" class="form-control rounded-pill" placeholder="Adicionar item..." required>
     <button class="btn-app btn-secundario" style="width:auto; padding: 10px 18px;"><i class="bi bi-plus-lg"></i></button>
   </form>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-clock-history"></i> Versões anteriores</h5>
+  {% if dia.versoes %}
+  <p class="texto-suave" style="font-size:.85rem;">
+    Cada vez que você regenera uma ideia, a versão anterior vem pra cá.
+    Você pode restaurar ou salvar no Banco de Ideias.
+  </p>
+  <div class="mt-2">
+    {% for v in dia.versoes %}
+    {% set icone = {'story':'camera-reels', 'reels':'film', 'feed':'grid-3x3-gap'}.get(v.tipo, 'lightbulb') %}
+    <div class="cartao" style="background:rgba(0,0,0,.02); border:1px dashed var(--rosa-suave);">
+      <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+        <div>
+          <span class="badge-app"><i class="bi bi-{{ icone }}"></i> {{ v.tipo|capitalize }}</span>
+          <span class="texto-suave ms-2" style="font-size:.75rem;">{{ v.criado_em.strftime('%d/%m %H:%M') }}</span>
+        </div>
+        <div class="d-flex gap-1">
+          <form method="POST" action="{{ url_for('planejamento.restaurar_versao', versao_id=v.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+              <i class="bi bi-arrow-counterclockwise"></i> Restaurar
+            </button>
+          </form>
+        </div>
+      </div>
+      <p class="mt-2 mb-1" style="white-space: pre-line; font-size:.92rem;">{{ v.conteudo[:280] }}{% if v.conteudo|length > 280 %}…{% endif %}</p>
+      {% if v.legenda %}<p class="texto-suave mt-1" style="font-size:.82rem; white-space: pre-line;">{{ v.legenda[:200] }}{% if v.legenda|length > 200 %}…{% endif %}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="texto-suave mt-2 mb-0">Ainda não há versões anteriores deste dia. Quando você regenerar uma ideia, ela aparecerá aqui automaticamente.</p>
+  {% endif %}
 </div>
 
 <a href="{{ url_for('planejamento.ver_semana', semana_id=dia.semana_id) }}" class="btn-app btn-secundario">

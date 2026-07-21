@@ -63,6 +63,30 @@
            placeholder="Ex: vender mais, crescer nos seguidores..." value="{{ loja.objetivos if loja else '' }}">
   </div>
 
+  <div class="mb-3">
+    <label class="form-label fw-bold">
+      O que torna sua loja única?
+      <span class="texto-suave fw-normal" style="font-size:.8rem;">(opcional, MAS faz toda a diferença na IA 💖)</span>
+    </label>
+    <textarea name="diferenciais" class="form-control rounded-3" rows="2"
+              placeholder="Ex: curadoria afetiva, peças exclusivas, atendimento personalizado no WhatsApp...">{{ loja.diferenciais if loja else '' }}</textarea>
+    <div class="texto-suave mt-1" style="font-size:.78rem;">
+      Quanto mais específica você for aqui, menos genérica fica a legenda que a IA cria pra você.
+    </div>
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label fw-bold">
+      O que sua cliente mais sofre / precisa resolver?
+      <span class="texto-suave fw-normal" style="font-size:.8rem;">(opcional, MAS faz toda a diferença na IA 💖)</span>
+    </label>
+    <textarea name="dores_do_publico" class="form-control rounded-3" rows="2"
+              placeholder="Ex: não tem o que vestir pro trabalho, não sabe combinar peças, roupas que não valorizam...">{{ loja.dores_do_publico if loja else '' }}</textarea>
+    <div class="texto-suave mt-1" style="font-size:.78rem;">
+      A IA usa EXATAMENTE essas dores pras suas legendas (fórmula PAS) - sem isso, fica genérico.
+    </div>
+  </div>
+
   <button type="submit" class="btn-app btn-primario">
     <i class="bi bi-check2-circle"></i> Tudo pronto, vamos lá!
   </button>
