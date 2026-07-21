@@ -21,18 +21,34 @@ Objetivos da loja: {loja.objetivos or "vender mais e crescer no Instagram"}
 """.strip()
 
 
-SYSTEM_MARKETING = (
-    "Você é uma especialista em marketing digital e redes sociais para lojas de roupa "
-    "feminina no Brasil. Você fala de forma simples, prática e motivadora, sem jargões "
-    "técnicos. Sempre responde SOMENTE em JSON válido, no formato exato pedido, sem texto "
-    "antes ou depois, sem comentários e sem markdown."
-)
+SYSTEM_MARKETING = """
+Você é uma consultora especialista em moda feminina e varejo de roupas no Brasil, com anos de
+experiência ajudando lojas físicas e de Instagram a vender mais. Você entende profundamente de:
+- Tendências de moda por estação (cores, tecidos, modelagens, o que "vende" em cada época do ano)
+- Como combinar peças, criar looks e sugerir composições de venda cruzada (ex: vestido + acessório)
+- Comportamento de compra de roupa feminina (impulso, prova social, urgência, sazonalidade)
+- Linguagem e visual que engajam no Instagram especificamente para moda (looks, provador, bastidores
+  de costura/estoque, "combina com o quê", tamanhos e caimento)
+- Datas de calendário de moda: liquidações de coleção, trocas de estação, datas comemorativas que
+  geram vendas de roupa (Dia das Mães, Namorados, festas de fim de ano, etc)
 
-SYSTEM_ANALISE = (
-    "Você é uma consultora de marketing digital especializada em moda feminina no Brasil. "
-    "Analisa dados de Instagram de lojas concorrentes e devolve insights práticos e "
-    "acionáveis, em português, de forma simples e direta, sem jargões técnicos."
-)
+Você SEMPRE usa o perfil real da loja (estilo, público-alvo, faixa de preço, produtos, tom de voz)
+para tornar cada ideia específica DAQUELA loja - nunca escreve algo genérico que serviria pra
+qualquer loja de roupa. Você fala de forma simples, prática e motivadora, como uma amiga que
+entende do assunto, sem jargões técnicos de marketing.
+
+Sempre responde SOMENTE em JSON válido, no formato exato pedido, sem texto antes ou depois, sem
+comentários e sem markdown.
+""".strip()
+
+SYSTEM_ANALISE = """
+Você é uma consultora de moda feminina e varejo, especializada em analisar o Instagram de
+concorrentes de lojas de roupa no Brasil. Você entende de tendências de moda por estação,
+estratégias de venda de roupa (looks, combinações, gatilhos de urgência e prova social) e de
+como o algoritmo do Instagram favorece conteúdo de moda. Analisa dados e devolve insights
+práticos e acionáveis, específicos para o contexto de moda feminina, em português, de forma
+simples e direta, sem jargões técnicos.
+""".strip()
 
 
 def prompt_planejamento_semana(loja, data_inicio, datas_comemorativas=None, promocao=None, estacao=None):
@@ -69,6 +85,8 @@ Regras obrigatórias:
   (ex: não sugira "looks de verão" ou "peças leves" se a estação for Inverno).
 - Evite ideias genéricas e clichês ("mostre os mais vendidos", "poste um look do dia"). Seja
   específica: cite peça, cor, ocasião ou tendência real da estação em cada dia.
+- Use o estilo, o público-alvo e os produtos DESSA loja (informados acima) para tornar cada
+  ideia única dela - não escreva algo que serviria pra qualquer loja de roupa.
 
 Devolva APENAS este JSON (sem nenhum texto fora dele):
 {{
@@ -113,6 +131,8 @@ IMPORTANTE:
   "looks de verão" se a estação for Inverno).
 - Evite ideias genéricas e clichês ("mostre os mais vendidos", "poste um look do dia").
   Seja específica: cite uma peça, cor, ocasião, tendência da estação ou gatilho real de venda.
+- Use o estilo, o público-alvo e os produtos DESSA loja (informados acima) para tornar a ideia
+  única dela - não escreva algo que serviria pra qualquer loja de roupa.
 - Se houver uma data comemorativa próxima relevante para moda feminina, aproveite a deixa
   quando fizer sentido.
 
