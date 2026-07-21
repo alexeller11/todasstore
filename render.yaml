@@ -4,15 +4,13 @@ services:
     env: python
     plan: free
     buildCommand: "pip install -r requirements.txt"
-    # Antes de subir a nova versão, aplica as migrations Alembic de forma idempotente:
-    # - faz stamp da baseline se for primeira vez (banco legado ainda sem alembic_version)
-    # - depois roda upgrade (só roda as incrementais pendentes)
-    preDeployCommand: "python -c \"import os, sys; from app import create_app; from app.extensions import db; from flask_migrate import stamp, upgrade; a=create_app(); a.app_context().push(); \
-import sqlalchemy; insp=sqlalchemy.inspect(db.engine); \
-tbls=set(insp.get_table_names()); \
-if 'alembic_version' not in tbls and len(tbls) > 0: \
-    print('banco pre-existente sem alembic_version -> stamp na baseline'); stamp(directory='migrations', revision='0001_baseline_producao'); \
-upgrade(directory='migrations')\""
+    # Antes de subir a nova versão do gunicorn, aplica as migrations Alembic
+    # de forma idempotente. Usa um script Python SEPARADO (subprocess self)
+    # para garantir que as conexões abertas pelo processo de migration sejam
+    # descartadas antes do runtime subir. Rodar stamp/upgrade no MESMO
+    # contexto do create_app() deixava transações PostgreSQL "aborted" e o
+    # runtime herdava conexões quebradas (InFailedSqlTransaction).
+    preDeployCommand: "python scripts/run_migrations.py"
     startCommand: "gunicorn wsgi:app"
     envVars:
       - key: SECRET_KEY

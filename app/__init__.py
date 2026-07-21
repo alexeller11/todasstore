@@ -54,12 +54,36 @@ def create_app(config_class=Config):
         return {"loja_atual": loja_atual}
 
     with app.app_context():
-        # Em produção (Render/PostgreSQL) o esquema é controlado por Alembic:
-        # `flask db upgrade` aplica as migrations do diretório migrations/.
-        # db.create_all() aqui é uma rede de segurança para dev local com SQLite
-        # novo (clona direto a partir dos modelos atuais). É NO-OP seguro em
-        # bancos onde as tabelas já existem - tanto via migrations quanto em
-        # bancos legados que serão "stamp"ados.
-        db.create_all()
+        # Em produção (DATABASE_URL = PostgreSQL do Render), o esquema é
+        # controlado por Alembic via `scripts/run_migrations.py` (render.yaml
+        # preDeployCommand). db.create_all() NÃO deve rodar em produção porque:
+        #   1) ele tenta criar TODAS as tabelas atuais (incl. as novas) e em
+        #      PostgreSQL isso pode abortar a transaction (InFailedSqlTransaction)
+        #      e quebrar as migrations subsequentes;
+        #   2) ele mascara migrations não-aplicadas, dando a ilusão de
+        #      "esquema em dia" enquanto o alembic_version está atrasado.
+        # Em dev (SQLite local) ele é uma rede de segurança: cria tudo a
+        # partir dos modelos atuais, ignorando migrations.
+        uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+        is_producao = uri.startswith("postgresql")
+        skip_create_all = is_producao or os.environ.get("TODASSTORE_SKIP_CREATE_ALL") == "1"
+        if skip_create_all:
+            app.logger.info(
+                "[create_app] esquema controlado por migrations Alembic; "
+                "db.create_all() NAO sera rodado."
+            )
+        else:
+            try:
+                db.create_all()
+            except Exception as e:
+                app.logger.warning(
+                    f"db.create_all() falhou (provavelmente por migration "
+                    f"pendente): {e}"
+                )
+                try:
+                    db.session.rollback()
+                except Exception:
+                    pass
+                db.engine.dispose()
 
     return app

@@ -121,21 +121,14 @@ O Alembic aplica todas as migrations, criando o esquema completo do zero.
 Como rede de segurança, `db.create_all()` é chamado no `create_app()` (é
 no-op seguro quando as tabelas já existem).
 
-### Em produção (Render, PostgreSQL já com dados) — ATENÇÃO
+### Em producao (Render, PostgreSQL ja com dados)
 
-**NÃO rode `flask db upgrade` direto.** O banco já existe com o esquema da
-`0001_baseline`. O fluxo correto é:
-
-```bash
-# 1) Marca que a baseline já está aplicada (NÃO executa DDL, só registra):
-flask --app wsgi db stamp 0001_baseline_producao
-
-# 2) Sobe SOMENTE a migration incremental:
-flask --app wsgi db upgrade
-```
-
-Isso adiciona apenas a coluna `descricao_visual` em `dia` e cria a tabela
-`versao_conteudo` — **sem tocar em nenhum dado existente**.
+O `render.yaml` ja tem `preDeployCommand: "python scripts/run_migrations.py"`.
+Esse script e idempotente: detecta se o banco ja tem `alembic_version`, faz
+`stamp` da baseline se for a primeira vez (banco legado) e sobe as
+incrementais pendentes. Disponde o engine no fim para garantir que o gunicorn
+que sobe logo depois comece com conexoes novas e limpas - evitando o bug
+`psycopg2.errors.InFailedSqlTransaction` (transacao abortada em cascata).
 
 ### Ao adicionar uma nova coluna/tabela no models.py
 
@@ -144,7 +137,23 @@ flask --app wsgi db migrate -m "descreva a mudanca"
 flask --app wsgi db upgrade
 ```
 
-Revise o arquivo gerado em `migrations/versions/` antes de subir a upgrade.
+Revise o arquivo gerado em `migrations/versions/` antes de commitar.
+
+### Sobre db.create_all()
+
+O `create_app()` roda `db.create_all()` apenas em SQLite local (dev/test). Em
+producao (PostgreSQL, quando `DATABASE_URL` comeca com `postgresql://`) isto
+e desativado automaticamente - em PostgreSQL, qualquer `db.create_all()` que
+tente criar tabela/coluna nova dentro de uma transacao DDL pode abortar a
+transacao e quebrar queries seguintes (origem do bug InFailedSqlTransaction).
+Em producao, apenas as migrations Alembic devem tocar o esquema.
+
+Para forcar o caminho "migrations only" em dev (util para testar o caminho de
+producao localmente):
+
+```bash
+TODASSTORE_SKIP_CREATE_ALL=1 python scripts/run_migrations.py
+```
 
 ## 8. Próximos passos sugeridos (evolução para SaaS)
 
