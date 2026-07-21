@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block titulo %}Semana {{ semana.numero }}{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-1">Semana {{ semana.numero }}</h2>
+<p class="texto-suave mb-3">{{ semana.data_inicio.strftime('%d/%m') }} a {{ semana.data_fim.strftime('%d/%m') }}</p>
+
+<div class="cartao">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <div class="fw-bold">{{ stats.percentual_conclusao }}% concluída</div>
+      <div class="texto-suave" style="font-size:.85rem;">
+        {{ stats.stories_feitos }} Stories · {{ stats.posts_feitos }} Posts feitos
+      </div>
+    </div>
+    <form method="POST" action="{{ url_for('planejamento.gerar_semana', semana_id=semana.id) }}">
+      <button type="submit" class="btn-app btn-dourado">
+        <i class="bi bi-magic"></i> Gerar Planejamento da Semana
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-megaphone-fill"></i> Promoção da semana</h5>
+  <p class="texto-suave mb-2" style="font-size:.85rem;">
+    Tem alguma promoção ou ação especial essa semana? Escreva aqui e a IA vai encaixar
+    isso nas ideias de conteúdo automaticamente.
+  </p>
+  <form method="POST" action="{{ url_for('planejamento.salvar_promocao', semana_id=semana.id) }}" class="d-flex gap-2 flex-wrap">
+    <input type="text" name="promocao" class="form-control rounded-pill" style="flex: 1 1 240px;"
+           placeholder="Ex: 20% off em vestidos até domingo" value="{{ semana.promocao or '' }}">
+    <button class="btn-app btn-secundario" style="width:auto; padding: 10px 18px;">
+      <i class="bi bi-check-lg"></i> Salvar
+    </button>
+  </form>
+</div>
+
+<div class="grade-dias mt-3">
+  {% for dia in semana.dias %}
+  <a href="{{ url_for('planejamento.ver_dia', dia_id=dia.id) }}"
+     class="card-dia {% if dia.data == dia.data.today() %}hoje{% endif %} {% if dia.dia_completo %}completo{% endif %}">
+    <div class="nome-dia">{{ dia.dia_semana }}</div>
+    <div class="texto-suave" style="font-size:.75rem;">{{ dia.data.strftime('%d/%m') }}</div>
+    <div class="mt-2" style="font-size:.85rem;">
+      {{ (dia.ideia_story[:40] + '…') if dia.ideia_story and dia.ideia_story|length > 40 else (dia.ideia_story or "Sem ideia ainda") }}
+    </div>
+    <div class="selos">
+      <span class="selo {% if dia.story_feito %}feito{% endif %}"><i class="bi bi-camera-reels"></i> Story</span>
+      {% if dia.tem_post %}
+        <span class="selo {% if dia.post_feito %}feito{% endif %}"><i class="bi bi-grid-3x3-gap"></i> Post</span>
+      {% endif %}
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% endblock %}

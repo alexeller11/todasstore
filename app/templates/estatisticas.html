@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block titulo %}Estatísticas{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-3"><i class="bi bi-bar-chart-fill"></i> Estatísticas da Semana</h2>
+
+<div class="cartao">
+  <div class="row text-center">
+    <div class="col-6 col-md-3 mb-2">
+      <div class="fs-3 fw-bold" style="color: var(--ameixa);">{{ stats.stories_feitos }}</div>
+      <div class="texto-suave" style="font-size:.8rem;">Stories feitos</div>
+    </div>
+    <div class="col-6 col-md-3 mb-2">
+      <div class="fs-3 fw-bold" style="color: var(--ameixa);">{{ stats.posts_feitos }}</div>
+      <div class="texto-suave" style="font-size:.8rem;">Posts feitos</div>
+    </div>
+    <div class="col-6 col-md-3 mb-2">
+      <div class="fs-3 fw-bold" style="color: var(--ameixa);">{{ stats.dias_completos }}</div>
+      <div class="texto-suave" style="font-size:.8rem;">Dias completos</div>
+    </div>
+    <div class="col-6 col-md-3 mb-2">
+      <div class="fs-3 fw-bold" style="color: var(--ameixa);">{{ stats.percentual_conclusao }}%</div>
+      <div class="texto-suave" style="font-size:.8rem;">Progresso</div>
+    </div>
+  </div>
+</div>
+
+<div class="cartao">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <h5 class="mb-0"><i class="bi bi-chat-heart"></i> Dica da semana</h5>
+    <form method="POST" action="{{ url_for('estatisticas.gerar_insight', semana_id=semana.id) }}">
+      <button class="btn-app btn-dourado" style="width:auto; padding:8px 16px;"><i class="bi bi-stars"></i> Gerar nova dica</button>
+    </form>
+  </div>
+  {% if insight %}
+    <p class="mt-3" style="white-space: pre-line;">{{ insight.texto }}</p>
+  {% else %}
+    <p class="texto-suave mt-3">Ainda não há nenhuma dica gerada para esta semana.</p>
+  {% endif %}
+</div>
+{% endblock %}

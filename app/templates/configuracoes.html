@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block titulo %}Configurações{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-3"><i class="bi bi-gear-fill"></i> Configurações</h2>
+
+<form method="POST" class="cartao">
+  <h5 class="mb-3">Dados da loja</h5>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Nome da loja</label>
+    <input type="text" name="nome" class="form-control rounded-3" value="{{ loja.nome or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Logo (link da imagem)</label>
+    <input type="text" name="logo_url" class="form-control rounded-3" value="{{ loja.logo_url or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Instagram</label>
+    <input type="text" name="instagram" class="form-control rounded-3" value="{{ loja.instagram or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">WhatsApp</label>
+    <input type="text" name="whatsapp" class="form-control rounded-3" value="{{ loja.whatsapp or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Cidade</label>
+    <input type="text" name="cidade" class="form-control rounded-3" value="{{ loja.cidade or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Segmento</label>
+    <input type="text" name="segmento" class="form-control rounded-3" value="{{ loja.segmento or '' }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-bold">Horário de funcionamento</label>
+    <input type="text" name="horario_funcionamento" class="form-control rounded-3" value="{{ loja.horario_funcionamento or '' }}">
+  </div>
+
+  <h5 class="mb-3">Perfil de marketing (usado pela IA)</h5>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Estilo da loja</label>
+    <input type="text" name="estilo" class="form-control rounded-3" value="{{ loja.estilo or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Público</label>
+    <input type="text" name="publico" class="form-control rounded-3" value="{{ loja.publico or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Faixa de preço</label>
+    <input type="text" name="faixa_preco" class="form-control rounded-3" value="{{ loja.faixa_preco or '' }}">
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Produtos vendidos</label>
+    <textarea name="produtos" class="form-control rounded-3" rows="2">{{ loja.produtos or '' }}</textarea>
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Tom de voz</label>
+    <input type="text" name="tom_de_voz" class="form-control rounded-3" value="{{ loja.tom_de_voz or '' }}">
+  </div>
+  <div class="mb-3">
+    <label class="form-label fw-bold">Objetivos</label>
+    <input type="text" name="objetivos" class="form-control rounded-3" value="{{ loja.objetivos or '' }}">
+  </div>
+
+  <button type="submit" class="btn-app btn-primario"><i class="bi bi-save"></i> Salvar configurações</button>
+</form>
+
+<div class="alert rounded-4" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+  <i class="bi bi-key"></i> A chave da IA (Groq) é configurada por segurança direto no servidor (variável de ambiente <code>GROQ_API_KEY</code>), não aqui na tela.
+</div>
+{% endblock %}

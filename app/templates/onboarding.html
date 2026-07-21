@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block titulo %}Vamos começar{% endblock %}
+
+{% block conteudo %}
+<div class="cartao-destaque text-center mb-4">
+  <h2><i class="bi bi-stars"></i> Bem-vinda!</h2>
+  <p class="mb-0">Vamos conhecer sua loja em menos de 2 minutinhos, pra eu poder te ajudar de verdade. 💖</p>
+</div>
+
+<form method="POST" class="cartao">
+  <div class="mb-3">
+    <label class="form-label fw-bold">Nome da sua loja</label>
+    <input type="text" name="nome" class="form-control form-control-lg rounded-3" required
+           placeholder="Ex: Todas Store" value="{{ loja.nome if loja else '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold">Cidade</label>
+    <input type="text" name="cidade" class="form-control rounded-3" placeholder="Ex: Linhares - ES"
+           value="{{ loja.cidade if loja else '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold">Instagram da loja</label>
+    <input type="text" name="instagram" class="form-control rounded-3" placeholder="@todasstore_"
+           value="{{ loja.instagram if loja else '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold">Como é o estilo da sua loja?</label>
+    <input type="text" name="estilo" class="form-control rounded-3"
+           placeholder="Ex: casual e despojado, festa, plus size..." value="{{ loja.estilo if loja else '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold">Quem é sua cliente ideal?</label>
+    <input type="text" name="publico" class="form-control rounded-3"
+           placeholder="Ex: mulheres de 20 a 35 anos" value="{{ loja.publico if loja else '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold">Faixa de preço dos produtos</label>
+    <input type="text" name="faixa_preco" class="form-control rounded-3"
+           placeholder="Ex: R$ 79 a R$ 250" value="{{ loja.faixa_preco if loja else '' }}">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold">O que você vende?</label>
+    <textarea name="produtos" class="form-control rounded-3" rows="2"
+              placeholder="Ex: vestidos, blusas, conjuntos...">{{ loja.produtos if loja else '' }}</textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label fw-bold">Como você quer falar com suas clientes?</label>
+    <input type="text" name="tom_de_voz" class="form-control rounded-3"
+           placeholder="Ex: descontraída, elegante, engraçada..." value="{{ loja.tom_de_voz if loja else '' }}">
+  </div>
+
+  <div class="mb-4">
+    <label class="form-label fw-bold">Qual seu maior objetivo agora?</label>
+    <input type="text" name="objetivos" class="form-control rounded-3"
+           placeholder="Ex: vender mais, crescer nos seguidores..." value="{{ loja.objetivos if loja else '' }}">
+  </div>
+
+  <button type="submit" class="btn-app btn-primario">
+    <i class="bi bi-check2-circle"></i> Tudo pronto, vamos lá!
+  </button>
+</form>
+{% endblock %}

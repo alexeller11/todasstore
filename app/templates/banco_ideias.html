@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block titulo %}Banco de Ideias{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-3"><i class="bi bi-lightbulb-fill"></i> Banco de Ideias</h2>
+
+<form method="GET" class="d-flex gap-2 mb-3">
+  <input type="text" name="busca" value="{{ busca }}" class="form-control rounded-pill" placeholder="Buscar ideia...">
+  <button class="btn-app btn-secundario" style="width:auto; padding: 10px 18px;"><i class="bi bi-search"></i></button>
+</form>
+
+<div class="d-flex gap-2 mb-3">
+  <a href="{{ url_for('banco_ideias.listar') }}" class="btn btn-sm rounded-pill {% if not apenas_favoritas %}btn-app btn-primario{% else %}btn-app btn-secundario{% endif %}" style="width:auto; padding:8px 16px;">Todas</a>
+  <a href="{{ url_for('banco_ideias.listar', favoritas=1) }}" class="btn btn-sm rounded-pill {% if apenas_favoritas %}btn-app btn-primario{% else %}btn-app btn-secundario{% endif %}" style="width:auto; padding:8px 16px;"><i class="bi bi-star-fill"></i> Favoritas</a>
+</div>
+
+<button class="btn-app btn-dourado mb-3" data-bs-toggle="collapse" data-bs-target="#formNovaIdeia">
+  <i class="bi bi-plus-circle"></i> Salvar nova ideia
+</button>
+
+<div class="collapse mb-3" id="formNovaIdeia">
+  <form method="POST" action="{{ url_for('banco_ideias.nova') }}" class="cartao">
+    <input type="text" name="titulo" class="form-control rounded-3 mb-2" placeholder="Título da ideia" required>
+    <select name="tipo" class="form-select rounded-3 mb-2">
+      <option value="story">Story</option>
+      <option value="reels">Reels</option>
+      <option value="feed">Feed</option>
+    </select>
+    <textarea name="conteudo" class="form-control rounded-3 mb-2" rows="2" placeholder="Descreva a ideia"></textarea>
+    <textarea name="legenda" class="form-control rounded-3 mb-2" rows="2" placeholder="Legenda (opcional)"></textarea>
+    <input type="text" name="cta" class="form-control rounded-3 mb-2" placeholder="CTA (opcional)">
+    <input type="text" name="tags" class="form-control rounded-3 mb-3" placeholder="Tags separadas por vírgula">
+    <button class="btn-app btn-primario" type="submit"><i class="bi bi-save"></i> Salvar</button>
+  </form>
+</div>
+
+{% for ideia in ideias %}
+<div class="cartao">
+  <div class="d-flex justify-content-between align-items-start">
+    <h5 class="mb-1">{{ ideia.titulo }}</h5>
+    <form method="POST" action="{{ url_for('banco_ideias.favoritar', ideia_id=ideia.id) }}">
+      <button class="btn border-0" style="color: {{ 'var(--dourado)' if ideia.favorito else 'var(--texto-suave)' }};">
+        <i class="bi {{ 'bi-star-fill' if ideia.favorito else 'bi-star' }}"></i>
+      </button>
+    </form>
+  </div>
+  <span class="badge-app mb-2 text-capitalize">{{ ideia.tipo }}</span>
+  <p class="mb-1">{{ ideia.conteudo }}</p>
+  {% if ideia.tags %}<p class="texto-suave" style="font-size:.8rem;">{{ ideia.tags }}</p>{% endif %}
+  <form method="POST" action="{{ url_for('banco_ideias.excluir', ideia_id=ideia.id) }}">
+    <button class="btn btn-sm text-danger border-0"><i class="bi bi-trash"></i> Excluir</button>
+  </form>
+</div>
+{% else %}
+<p class="texto-suave text-center mt-4">Nenhuma ideia salva ainda. Suas ideias favoritas aparecerão aqui!</p>
+{% endfor %}
+{% endblock %}

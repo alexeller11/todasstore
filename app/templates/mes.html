@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block titulo %}{{ mes.nome }}{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-1">{{ mes.nome }} de {{ mes.ano }}</h2>
+<p class="texto-suave mb-3">{{ stats.dias_completos }} de {{ stats.total_dias }} dias concluídos ({{ stats.percentual_conclusao }}%)</p>
+
+<div class="progresso-container mb-4">
+  <div class="progresso-barra" style="width: {{ stats.percentual_conclusao }}%;"></div>
+</div>
+
+{% for semana in mes.semanas %}
+<a href="{{ url_for('planejamento.ver_semana', semana_id=semana.id) }}" class="cartao d-block text-decoration-none" style="color: var(--texto);">
+  <div class="d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="mb-1">Semana {{ semana.numero }}</h5>
+      <span class="texto-suave" style="font-size:.85rem;">
+        {{ semana.data_inicio.strftime('%d/%m') }} a {{ semana.data_fim.strftime('%d/%m') }}
+      </span>
+    </div>
+    <i class="bi bi-chevron-right fs-4" style="color: var(--rosa-medio);"></i>
+  </div>
+</a>
+{% endfor %}
+{% endblock %}

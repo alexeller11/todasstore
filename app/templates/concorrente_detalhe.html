@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block titulo %}@{{ concorrente.instagram }}{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-3">@{{ concorrente.instagram }}</h2>
+
+<form method="POST" action="{{ url_for('concorrentes.analisar', concorrente_id=concorrente.id) }}">
+  <button class="btn-app btn-dourado mb-3"><i class="bi bi-search-heart"></i> Analisar este concorrente</button>
+</form>
+
+{% if ultima_analise %}
+<div class="cartao">
+  <h5><i class="bi bi-graph-up-arrow"></i> Última análise</h5>
+  <p style="white-space: pre-line;">{{ ultima_analise.resumo_ia }}</p>
+  <span class="texto-suave" style="font-size:.78rem;">Gerado em {{ ultima_analise.criado_em.strftime('%d/%m/%Y %H:%M') }}</span>
+</div>
+{% else %}
+<p class="texto-suave">Ainda sem análise. Clique no botão acima para gerar a primeira!</p>
+{% endif %}
+
+<div class="cartao">
+  <h5><i class="bi bi-pencil-square"></i> Observações sobre os Stories dele(a)</h5>
+  <p class="texto-suave" style="font-size:.85rem;">Como o Instagram não permite coletar Stories automaticamente, anote aqui o que você observar.</p>
+  <form method="POST" action="{{ url_for('concorrentes.salvar_observacoes', concorrente_id=concorrente.id) }}">
+    <textarea name="observacoes_stories" class="form-control rounded-3 mb-2" rows="4">{{ concorrente.observacoes_stories or '' }}</textarea>
+    <button class="btn-app btn-secundario" type="submit"><i class="bi bi-save"></i> Salvar observações</button>
+  </form>
+</div>
+
+<form method="POST" action="{{ url_for('concorrentes.remover', concorrente_id=concorrente.id) }}">
+  <button class="btn btn-sm text-danger border-0"><i class="bi bi-trash"></i> Remover concorrente</button>
+</form>
+{% endblock %}

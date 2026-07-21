@@ -1,0 +1,56 @@
+"""
+datas_comemorativas.py
+Reconhece datas comemorativas relevantes para moda feminina no Brasil.
+Datas móveis (Dia das Mães, Namorados etc.) são calculadas por regra simples;
+para simplicidade e confiabilidade, mantemos uma tabela por ano com as principais.
+"""
+from datetime import date
+
+# Datas fixas (mesma no ano todo)
+DATAS_FIXAS = {
+    (6, 12): "Dia dos Namorados",
+    (12, 25): "Natal",
+    (9, 23): "Início da Primavera",
+    (12, 21): "Início do Verão",
+    (3, 20): "Início do Outono",
+    (6, 21): "Início do Inverno",
+}
+
+# Datas móveis conhecidas ano a ano (adicionar conforme necessário)
+DATAS_MOVEIS = {
+    2026: {
+        (5, 10): "Dia das Mães",
+        (11, 27): "Black Friday",
+    },
+    2027: {
+        (5, 9): "Dia das Mães",
+        (11, 26): "Black Friday",
+    },
+}
+
+PERIODOS_LIQUIDACAO = [
+    ((1, 2), (1, 31), "Liquidação de Verão"),
+    ((7, 1), (7, 31), "Liquidação de Inverno"),
+]
+
+
+def datas_da_semana(data_inicio, data_fim):
+    """Retorna lista de nomes de datas comemorativas que caem dentro do intervalo da semana."""
+    encontradas = []
+    cursor = data_inicio
+    while cursor <= data_fim:
+        chave = (cursor.month, cursor.day)
+        if chave in DATAS_FIXAS:
+            encontradas.append(DATAS_FIXAS[chave])
+        moveis_ano = DATAS_MOVEIS.get(cursor.year, {})
+        if chave in moveis_ano:
+            encontradas.append(moveis_ano[chave])
+        cursor = cursor.fromordinal(cursor.toordinal() + 1)
+
+    for (m_ini, d_ini), (m_fim, d_fim), nome in PERIODOS_LIQUIDACAO:
+        inicio_periodo = date(data_inicio.year, m_ini, d_ini)
+        fim_periodo = date(data_inicio.year, m_fim, d_fim)
+        if data_inicio <= fim_periodo and data_fim >= inicio_periodo:
+            encontradas.append(nome)
+
+    return list(dict.fromkeys(encontradas))  # remove duplicados mantendo ordem

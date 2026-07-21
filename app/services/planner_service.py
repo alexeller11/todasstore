@@ -1,0 +1,129 @@
+"""
+planner_service.py
+Cuida da estrutura de calendário (mês -> semana -> dia) e chama a IA
+para gerar o planejamento semanal completo.
+"""
+import calendar
+from datetime import date, timedelta
+
+from app.extensions import db
+from app.models import Mes, Semana, Dia, ChecklistItem, Loja
+from app.ai import ai_service, prompts
+from app.services.checklist_service import criar_checklist_padrao
+from app.services.datas_comemorativas import datas_da_semana
+
+NOMES_MESES = [
+    "", "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro",
+]
+
+DIAS_SEMANA = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"]
+
+
+def obter_ou_criar_mes(ano, numero):
+    mes = Mes.query.filter_by(ano=ano, numero=numero).first()
+    if mes:
+        return mes
+
+    mes = Mes(ano=ano, numero=numero, nome=NOMES_MESES[numero])
+    db.session.add(mes)
+    db.session.flush()
+
+    _gerar_semanas_e_dias(mes)
+    db.session.commit()
+    return mes
+
+
+def _gerar_semanas_e_dias(mes):
+    """Cria semanas (segunda a domingo) e os 7 dias de cada uma, cobrindo o mês inteiro."""
+    primeiro_dia = date(mes.ano, mes.numero, 1)
+    ultimo_dia_num = calendar.monthrange(mes.ano, mes.numero)[1]
+    ultimo_dia = date(mes.ano, mes.numero, ultimo_dia_num)
+
+    # volta até a segunda-feira que contém o primeiro dia do mês
+    inicio_semana = primeiro_dia - timedelta(days=primeiro_dia.weekday())
+
+    numero_semana = 1
+    cursor = inicio_semana
+    while cursor <= ultimo_dia:
+        fim_semana = cursor + timedelta(days=6)
+        semana = Semana(mes_id=mes.id, numero=numero_semana, data_inicio=cursor, data_fim=fim_semana)
+        db.session.add(semana)
+        db.session.flush()
+
+        for i, nome_dia in enumerate(DIAS_SEMANA):
+            data_dia = cursor + timedelta(days=i)
+            dia = Dia(semana_id=semana.id, data=data_dia, dia_semana=nome_dia)
+            db.session.add(dia)
+            db.session.flush()
+            criar_checklist_padrao(dia.id, salvar=False)
+
+        numero_semana += 1
+        cursor += timedelta(days=7)
+
+
+def gerar_planejamento_semana(semana_id):
+    """Chama a IA e preenche os 7 dias da semana com Stories + 3 Posts distribuídos."""
+    semana = Semana.query.get_or_404(semana_id)
+    loja = Loja.query.first()
+
+    datas_especiais = datas_da_semana(semana.data_inicio, semana.data_fim)
+
+    system_prompt, user_prompt = prompts.prompt_planejamento_semana(
+        loja, semana.data_inicio.strftime("%d/%m/%Y"), datas_especiais, semana.promocao
+    )
+    resultado = ai_service.gerar_json(system_prompt, user_prompt)
+
+    dias_gerados = resultado.get("dias", {})
+    dias_por_nome = {d.dia_semana: d for d in semana.dias}
+
+    for nome_dia, conteudo in dias_gerados.items():
+        dia = dias_por_nome.get(nome_dia)
+        if not dia:
+            continue
+        dia.ideia_story = conteudo.get("ideia_story")
+        dia.ideia_reels = conteudo.get("ideia_reels")
+        dia.ideia_feed = conteudo.get("ideia_feed")
+        dia.legenda = conteudo.get("legenda")
+        dia.cta = conteudo.get("cta")
+        dia.formato = conteudo.get("formato")
+        dia.objetivo = conteudo.get("objetivo")
+        dia.tempo_estimado = conteudo.get("tempo_estimado")
+        dia.tem_post = bool(conteudo.get("tem_post"))
+
+    db.session.commit()
+    return semana
+
+
+def gerar_nova_ideia_dia(dia_id, tipo):
+    """Regenera a ideia de um único dia (botão "Gerar nova ideia")."""
+    dia = Dia.query.get_or_404(dia_id)
+    loja = Loja.query.first()
+
+    system_prompt, user_prompt = prompts.prompt_nova_ideia_dia(loja, dia.dia_semana, tipo)
+    resultado = ai_service.gerar_json(system_prompt, user_prompt)
+
+    campo_ideia = {"story": "ideia_story", "reels": "ideia_reels", "feed": "ideia_feed"}.get(tipo)
+    conteudo_ideia = (resultado.get(campo_ideia) or "").strip() if campo_ideia else ""
+    if not conteudo_ideia:
+        raise RuntimeError(
+            "A IA não retornou uma ideia válida dessa vez. Tente gerar novamente."
+        )
+
+    if tipo == "story":
+        dia.ideia_story = conteudo_ideia
+    elif tipo == "reels":
+        dia.ideia_reels = conteudo_ideia
+        dia.tem_post = True
+    elif tipo == "feed":
+        dia.ideia_feed = conteudo_ideia
+        dia.tem_post = True
+
+    dia.legenda = resultado.get("legenda") or dia.legenda
+    dia.cta = resultado.get("cta") or dia.cta
+    dia.formato = resultado.get("formato") or dia.formato
+    dia.objetivo = resultado.get("objetivo") or dia.objetivo
+    dia.tempo_estimado = resultado.get("tempo_estimado") or dia.tempo_estimado
+
+    db.session.commit()
+    return dia

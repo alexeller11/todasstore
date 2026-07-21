@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block titulo %}Concorrentes{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-1"><i class="bi bi-binoculars-fill"></i> Análise de Concorrentes</h2>
+<p class="texto-suave mb-3">Acompanhe outras lojas para se inspirar (sem copiar) e descobrir oportunidades.</p>
+
+<form method="POST" action="{{ url_for('concorrentes.adicionar') }}" class="cartao d-flex gap-2 flex-wrap">
+  <input type="text" name="instagram" class="form-control rounded-3" style="flex:2; min-width:150px;" placeholder="@perfil_do_instagram" required>
+  <input type="text" name="apelido" class="form-control rounded-3" style="flex:1; min-width:120px;" placeholder="Apelido (opcional)">
+  <button class="btn-app btn-primario" style="width:auto; padding: 10px 18px;"><i class="bi bi-plus-lg"></i> Adicionar</button>
+</form>
+
+<div class="alert rounded-4 mt-3" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+  <i class="bi bi-info-circle"></i> O Instagram não permite coletar Stories automaticamente. Registre observações manuais na página de cada concorrente.
+</div>
+
+{% for c in concorrentes %}
+<a href="{{ url_for('concorrentes.ver', concorrente_id=c.id) }}" class="cartao d-flex justify-content-between align-items-center text-decoration-none" style="color: var(--texto);">
+  <div>
+    <h5 class="mb-0">@{{ c.instagram }}</h5>
+    {% if c.apelido %}<span class="texto-suave">{{ c.apelido }}</span>{% endif %}
+  </div>
+  <i class="bi bi-chevron-right fs-4" style="color: var(--rosa-medio);"></i>
+</a>
+{% else %}
+<p class="texto-suave text-center mt-4">Nenhum concorrente cadastrado ainda.</p>
+{% endfor %}
+{% endblock %}

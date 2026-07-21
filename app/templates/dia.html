@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block titulo %}Dia{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-1 text-capitalize">{{ dia.dia_semana }}</h2>
+<p class="texto-suave mb-3">{{ dia.data.strftime('%d/%m/%Y') }}</p>
+
+<div class="cartao">
+  <div class="d-flex justify-content-between align-items-start">
+    <h5><i class="bi bi-camera-reels-fill"></i> Ideia de Story</h5>
+    <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='story') }}">
+      <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+        <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
+      </button>
+    </form>
+  </div>
+  <p class="mt-2" style="white-space: pre-line;">{{ dia.ideia_story or "Nenhuma ideia ainda. Clique em gerar nova ideia!" }}</p>
+</div>
+
+<div class="cartao">
+  <div class="d-flex justify-content-between align-items-start">
+    <h5><i class="bi bi-film"></i> Ideia de Reels</h5>
+    <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='reels') }}">
+      <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+        <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
+      </button>
+    </form>
+  </div>
+  <p class="mt-2" style="white-space: pre-line;">{{ dia.ideia_reels or "Sem reels planejado para este dia." }}</p>
+</div>
+
+<div class="cartao">
+  <div class="d-flex justify-content-between align-items-start">
+    <h5><i class="bi bi-grid-3x3-gap-fill"></i> Ideia de Feed</h5>
+    <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='feed') }}">
+      <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+        <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
+      </button>
+    </form>
+  </div>
+  <p class="mt-2" style="white-space: pre-line;">{{ dia.ideia_feed or "Sem post de feed planejado para este dia." }}</p>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-chat-heart-fill"></i> Legenda pronta</h5>
+  <p class="mt-2" style="white-space: pre-line;">{{ dia.legenda or "Ainda sem legenda." }}</p>
+  {% if dia.cta %}<span class="badge-app"><i class="bi bi-megaphone"></i> {{ dia.cta }}</span>{% endif %}
+  {% if dia.tempo_estimado %}<span class="badge-app ms-1"><i class="bi bi-clock"></i> {{ dia.tempo_estimado }}</span>{% endif %}
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-check2-square"></i> Checklist do dia</h5>
+  <div class="mt-3">
+    {% for item in dia.checklist_items|sort(attribute='ordem') %}
+    <div class="item-checklist {% if item.concluido %}concluido{% endif %}" onclick="alternarChecklist({{ item.id }}, this)">
+      <div class="check-circulo">{% if item.concluido %}<i class="bi bi-check-lg"></i>{% endif %}</div>
+      <div class="flex-grow-1">{{ item.texto }}</div>
+      <form method="POST" action="{{ url_for('planejamento.remover_checklist', item_id=item.id) }}" onclick="event.stopPropagation();">
+        <button class="btn btn-sm text-danger border-0"><i class="bi bi-x-lg"></i></button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+
+  <form method="POST" action="{{ url_for('planejamento.adicionar_checklist', dia_id=dia.id) }}" class="d-flex gap-2 mt-3">
+    <input type="text" name="texto" class="form-control rounded-pill" placeholder="Adicionar item..." required>
+    <button class="btn-app btn-secundario" style="width:auto; padding: 10px 18px;"><i class="bi bi-plus-lg"></i></button>
+  </form>
+</div>
+
+<a href="{{ url_for('planejamento.ver_semana', semana_id=dia.semana_id) }}" class="btn-app btn-secundario">
+  <i class="bi bi-arrow-left"></i> Voltar para a semana
+</a>
+{% endblock %}

@@ -1,0 +1,235 @@
+/* =========================================================
+   Todas Store · Assistente de Marketing
+   Paleta: rosa-chá quente + ameixa profundo + dourado suave
+   Tipografia: Quicksand (títulos, arredondada e feminina)
+                Nunito (corpo, legível e amigável)
+   ========================================================= */
+
+:root {
+  --rosa-suave: #FBE7E4;
+  --rosa-medio: #F2A6A0;
+  --ameixa: #6B2C4C;
+  --ameixa-clara: #8C4468;
+  --dourado: #D9A441;
+  --creme: #FFFBF7;
+  --texto: #4A3140;
+  --texto-suave: #8C7385;
+  --verde-sucesso: #6FA98A;
+  --sombra: 0 8px 24px rgba(107, 44, 76, 0.10);
+  --sombra-forte: 0 12px 32px rgba(107, 44, 76, 0.18);
+  --raio: 22px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: linear-gradient(180deg, var(--rosa-suave) 0%, var(--creme) 320px);
+  color: var(--texto);
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 90px; /* espaço para o menu inferior no mobile */
+}
+
+h1, h2, h3, h4, .titulo-app {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  color: var(--ameixa);
+}
+
+/* ---------- Topo ---------- */
+.topo-app {
+  background: var(--creme);
+  padding: 18px 20px;
+  border-radius: 0 0 28px 28px;
+  box-shadow: var(--sombra);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topo-app .marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topo-app .marca .bola-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--rosa-medio), var(--ameixa));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+/* ---------- Botões grandes e amigáveis ---------- */
+.btn-app {
+  border: none;
+  border-radius: 18px;
+  padding: 16px 22px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: var(--sombra);
+  width: 100%;
+}
+.btn-app:active { transform: scale(0.97); }
+
+.btn-primario {
+  background: linear-gradient(135deg, var(--ameixa-clara), var(--ameixa));
+  color: white;
+}
+.btn-primario:hover { color: white; box-shadow: var(--sombra-forte); }
+
+.btn-secundario {
+  background: white;
+  color: var(--ameixa);
+  border: 2px solid var(--rosa-medio);
+}
+.btn-secundario:hover { color: var(--ameixa); background: var(--rosa-suave); }
+
+.btn-dourado {
+  background: linear-gradient(135deg, var(--dourado), #c98a2e);
+  color: white;
+}
+.btn-dourado:hover { color: white; }
+
+/* ---------- Cartões ---------- */
+.cartao {
+  background: white;
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 22px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(242, 166, 160, 0.25);
+}
+
+.cartao-destaque {
+  background: linear-gradient(135deg, var(--ameixa-clara), var(--ameixa));
+  color: white;
+  border-radius: var(--raio);
+  padding: 24px;
+  box-shadow: var(--sombra-forte);
+  margin-bottom: 18px;
+}
+.cartao-destaque h2, .cartao-destaque h3 { color: white; }
+
+/* ---------- Barra de progresso ---------- */
+.progresso-container {
+  background: var(--rosa-suave);
+  border-radius: 30px;
+  height: 16px;
+  overflow: hidden;
+}
+.progresso-barra {
+  height: 100%;
+  background: linear-gradient(90deg, var(--dourado), var(--rosa-medio));
+  border-radius: 30px;
+  transition: width .5s ease;
+}
+
+/* ---------- Checklist ---------- */
+.item-checklist {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: var(--rosa-suave);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: background .2s ease;
+}
+.item-checklist.concluido {
+  background: rgba(111, 169, 138, 0.18);
+  text-decoration: line-through;
+  color: var(--texto-suave);
+}
+.item-checklist .check-circulo {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--ameixa-clara);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: white;
+}
+.item-checklist.concluido .check-circulo {
+  background: var(--verde-sucesso);
+  border-color: var(--verde-sucesso);
+  color: white;
+}
+
+/* ---------- Menu inferior (mobile-first, estilo app) ---------- */
+.menu-inferior {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: white;
+  box-shadow: 0 -6px 20px rgba(107,44,76,0.12);
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 6px calc(10px + env(safe-area-inset-bottom));
+  z-index: 1000;
+  border-radius: 22px 22px 0 0;
+}
+.menu-inferior a {
+  color: var(--texto-suave);
+  text-decoration: none;
+  font-size: 0.72rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+}
+.menu-inferior a.ativo, .menu-inferior a:hover {
+  color: var(--ameixa);
+  background: var(--rosa-suave);
+}
+.menu-inferior i { font-size: 1.3rem; }
+
+/* ---------- Dias da semana (grade) ---------- */
+.grade-dias { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; }
+.card-dia {
+  background: white;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--sombra);
+  border: 2px solid transparent;
+  text-decoration: none;
+  color: var(--texto);
+  display: block;
+  transition: transform .15s ease;
+}
+.card-dia:hover { transform: translateY(-3px); color: var(--texto); }
+.card-dia.hoje { border-color: var(--dourado); }
+.card-dia.completo { border-color: var(--verde-sucesso); }
+.card-dia .nome-dia { font-family:'Quicksand'; font-weight:700; color: var(--ameixa); text-transform: capitalize;}
+.card-dia .selos { display:flex; gap:6px; margin-top:8px; }
+.selo { font-size: .68rem; padding: 3px 9px; border-radius: 20px; background: var(--rosa-suave); color: var(--ameixa); font-weight:700;}
+.selo.feito { background: var(--verde-sucesso); color: white; }
+
+/* ---------- Utilitários ---------- */
+.texto-suave { color: var(--texto-suave); }
+.container-app { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+.badge-app { background: var(--rosa-suave); color: var(--ameixa); font-weight: 700; border-radius: 20px; padding: 5px 14px; font-size: .78rem; }
+
+@media (min-width: 768px) {
+  body { padding-bottom: 24px; }
+  .menu-inferior { display: none; }
+}
