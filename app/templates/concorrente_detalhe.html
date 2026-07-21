@@ -5,6 +5,7 @@
 <h2 class="mb-3">@{{ concorrente.instagram }}</h2>
 
 <form method="POST" action="{{ url_for('concorrentes.analisar', concorrente_id=concorrente.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <button class="btn-app btn-dourado mb-3"><i class="bi bi-search-heart"></i> Analisar este concorrente</button>
 </form>
 
@@ -22,12 +23,14 @@
   <h5><i class="bi bi-pencil-square"></i> Observações sobre os Stories dele(a)</h5>
   <p class="texto-suave" style="font-size:.85rem;">Como o Instagram não permite coletar Stories automaticamente, anote aqui o que você observar.</p>
   <form method="POST" action="{{ url_for('concorrentes.salvar_observacoes', concorrente_id=concorrente.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <textarea name="observacoes_stories" class="form-control rounded-3 mb-2" rows="4">{{ concorrente.observacoes_stories or '' }}</textarea>
     <button class="btn-app btn-secundario" type="submit"><i class="bi bi-save"></i> Salvar observações</button>
   </form>
 </div>
 
 <form method="POST" action="{{ url_for('concorrentes.remover', concorrente_id=concorrente.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <button class="btn btn-sm text-danger border-0"><i class="bi bi-trash"></i> Remover concorrente</button>
 </form>
 {% endblock %}

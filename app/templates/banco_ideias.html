@@ -20,6 +20,7 @@
 
 <div class="collapse mb-3" id="formNovaIdeia">
   <form method="POST" action="{{ url_for('banco_ideias.nova') }}" class="cartao">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <input type="text" name="titulo" class="form-control rounded-3 mb-2" placeholder="Título da ideia" required>
     <select name="tipo" class="form-select rounded-3 mb-2">
       <option value="story">Story</option>
@@ -39,6 +40,7 @@
   <div class="d-flex justify-content-between align-items-start">
     <h5 class="mb-1">{{ ideia.titulo }}</h5>
     <form method="POST" action="{{ url_for('banco_ideias.favoritar', ideia_id=ideia.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <button class="btn border-0" style="color: {{ 'var(--dourado)' if ideia.favorito else 'var(--texto-suave)' }};">
         <i class="bi {{ 'bi-star-fill' if ideia.favorito else 'bi-star' }}"></i>
       </button>
@@ -48,6 +50,7 @@
   <p class="mb-1">{{ ideia.conteudo }}</p>
   {% if ideia.tags %}<p class="texto-suave" style="font-size:.8rem;">{{ ideia.tags }}</p>{% endif %}
   <form method="POST" action="{{ url_for('banco_ideias.excluir', ideia_id=ideia.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <button class="btn btn-sm text-danger border-0"><i class="bi bi-trash"></i> Excluir</button>
   </form>
 </div>

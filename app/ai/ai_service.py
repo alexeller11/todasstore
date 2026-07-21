@@ -14,7 +14,7 @@ def _get_client():
     api_key = current_app.config.get("GROQ_API_KEY") or os.environ.get("GROQ_API_KEY")
     if not api_key:
         raise RuntimeError(
-            "Chave da Groq não configurada. Adicione GROQ_API_KEY nas variáveis de ambiente."
+            "A chave da IA (GROQ_API_KEY) não está configurada! Por favor, adicione-a no arquivo .env."
         )
     return Groq(api_key=api_key)
 
@@ -24,7 +24,7 @@ def _chamar_modelo(mensagens, json_mode=True, temperatura=0.8):
     client = _get_client()
     modelos = [
         current_app.config.get("GROQ_MODEL_PRINCIPAL", "llama-3.3-70b-versatile"),
-        current_app.config.get("GROQ_MODEL_ALTERNATIVO", "qwen/qwen3-32b"),
+        current_app.config.get("GROQ_MODEL_ALTERNATIVO", "qwen/qwen2.5-32b-instruct"),
     ]
 
     ultimo_erro = None
@@ -38,12 +38,19 @@ def _chamar_modelo(mensagens, json_mode=True, temperatura=0.8):
             )
             if json_mode:
                 kwargs["response_format"] = {"type": "json_object"}
-            resp = client.chat.completions.create(**kwargs)
+            resp = client.chat.completions.create(
+                **kwargs, 
+                timeout=20.0,
+                max_retries=2
+            )
             return resp.choices[0].message.content
-        except Exception as e:  # tenta o próximo modelo
+        except Exception as e:
+            current_app.logger.warning(f"Erro ao chamar modelo {modelo}: {e}")
             ultimo_erro = e
             continue
-    raise RuntimeError(f"Não foi possível falar com a IA agora. Detalhe técnico: {ultimo_erro}")
+    
+    current_app.logger.error(f"Todos os modelos da Groq falharam. Último erro: {ultimo_erro}")
+    raise RuntimeError("Nossa IA está sobrecarregada ou indisponível no momento. Por favor, tente novamente em alguns instantes.")
 
 
 def gerar_json(system_prompt, user_prompt, temperatura=0.8):

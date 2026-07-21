@@ -9,6 +9,7 @@
   <div class="d-flex justify-content-between align-items-start">
     <h5><i class="bi bi-camera-reels-fill"></i> Ideia de Story</h5>
     <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='story') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
         <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
       </button>
@@ -21,6 +22,7 @@
   <div class="d-flex justify-content-between align-items-start">
     <h5><i class="bi bi-film"></i> Ideia de Reels</h5>
     <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='reels') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
         <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
       </button>
@@ -33,6 +35,7 @@
   <div class="d-flex justify-content-between align-items-start">
     <h5><i class="bi bi-grid-3x3-gap-fill"></i> Ideia de Feed</h5>
     <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='feed') }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
         <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
       </button>
@@ -42,7 +45,14 @@
 </div>
 
 <div class="cartao">
-  <h5><i class="bi bi-chat-heart-fill"></i> Legenda pronta</h5>
+  <div class="d-flex justify-content-between align-items-start">
+    <h5><i class="bi bi-chat-heart-fill"></i> Legenda pronta</h5>
+    {% if dia.legenda %}
+    <button class="btn btn-sm rounded-pill" onclick="navigator.clipboard.writeText(`{{ dia.legenda|replace('\n', '\\n')|replace('\"', '\\\"')|replace('`', '\\`') }}`); this.innerHTML='<i class=\'bi bi-check2\'></i> Copiado!'; setTimeout(()=>this.innerHTML='<i class=\'bi bi-copy\'></i> Copiar', 2000)" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+      <i class="bi bi-copy"></i> Copiar
+    </button>
+    {% endif %}
+  </div>
   <p class="mt-2" style="white-space: pre-line;">{{ dia.legenda or "Ainda sem legenda." }}</p>
   {% if dia.cta %}<span class="badge-app"><i class="bi bi-megaphone"></i> {{ dia.cta }}</span>{% endif %}
   {% if dia.tempo_estimado %}<span class="badge-app ms-1"><i class="bi bi-clock"></i> {{ dia.tempo_estimado }}</span>{% endif %}
@@ -56,6 +66,7 @@
       <div class="check-circulo">{% if item.concluido %}<i class="bi bi-check-lg"></i>{% endif %}</div>
       <div class="flex-grow-1">{{ item.texto }}</div>
       <form method="POST" action="{{ url_for('planejamento.remover_checklist', item_id=item.id) }}" onclick="event.stopPropagation();">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button class="btn btn-sm text-danger border-0"><i class="bi bi-x-lg"></i></button>
       </form>
     </div>
@@ -63,6 +74,7 @@
   </div>
 
   <form method="POST" action="{{ url_for('planejamento.adicionar_checklist', dia_id=dia.id) }}" class="d-flex gap-2 mt-3">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <input type="text" name="texto" class="form-control rounded-pill" placeholder="Adicionar item..." required>
     <button class="btn-app btn-secundario" style="width:auto; padding: 10px 18px;"><i class="bi bi-plus-lg"></i></button>
   </form>

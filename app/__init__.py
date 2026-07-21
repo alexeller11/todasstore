@@ -34,6 +34,8 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
+    from app.extensions import csrf
+    csrf.init_app(app)
 
     from app.models import models  # noqa: garante que os modelos sejam registrados
 
@@ -54,6 +56,16 @@ def create_app(config_class=Config):
         return send_from_directory(
             os.path.join(app.root_path, "static"), "sw.js", mimetype="application/javascript"
         )
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        from flask import render_template
+        return render_template('404.html'), 404
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        from flask import render_template
+        return render_template('500.html'), 500
 
     @app.context_processor
     def injetar_globais():

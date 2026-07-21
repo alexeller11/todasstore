@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}Erro no Servidor{% endblock %}
+
+{% block conteudo %}
+<div class="cartao text-center py-5">
+    <h1 class="display-1 text-muted" style="font-weight: 700;"><i class="bi bi-exclamation-triangle"></i> 500</h1>
+    <h2 class="h4 mb-4">Algo deu errado.</h2>
+    <p class="text-muted mb-4">Ocorreu um erro interno no servidor. Nossa IA pode estar indisponível ou ocorreu uma falha inesperada.</p>
+    <a href="{{ url_for('dashboard.index') }}" class="btn-app btn-secundario" style="width: auto; padding: 12px 24px;">Tentar Novamente</a>
+</div>
+{% endblock %}

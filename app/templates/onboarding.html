@@ -8,6 +8,7 @@
 </div>
 
 <form method="POST" class="cartao">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <div class="mb-3">
     <label class="form-label fw-bold">Nome da sua loja</label>
     <input type="text" name="nome" class="form-control form-control-lg rounded-3" required

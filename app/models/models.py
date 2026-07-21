@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from app.extensions import db
 
 
@@ -21,7 +21,7 @@ class Loja(db.Model):
     segmento = db.Column(db.String(120), default="Moda Feminina")
     horario_funcionamento = db.Column(db.String(120))
     onboarding_concluido = db.Column(db.Boolean, default=False)
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class Mes(db.Model):
@@ -104,7 +104,7 @@ class Ideia(db.Model):
     tags = db.Column(db.String(255))               # separado por vírgula
     favorito = db.Column(db.Boolean, default=False)
     origem = db.Column(db.String(50), default="ia")  # ia, manual, data_comemorativa
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class Concorrente(db.Model):
@@ -115,7 +115,7 @@ class Concorrente(db.Model):
     apelido = db.Column(db.String(120))
     ativo = db.Column(db.Boolean, default=True)
     observacoes_stories = db.Column(db.Text)  # anotação manual (stories não são coletáveis)
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     analises = db.relationship("AnaliseConcorrente", backref="concorrente", cascade="all, delete-orphan")
 
@@ -127,7 +127,7 @@ class AnaliseConcorrente(db.Model):
     concorrente_id = db.Column(db.Integer, db.ForeignKey("concorrente.id"), nullable=False)
     dados_brutos = db.Column(db.Text)     # JSON com o que foi coletado (posts públicos)
     resumo_ia = db.Column(db.Text)        # texto gerado pela IA (pontos fortes, oportunidades...)
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class InsightSemanal(db.Model):
@@ -137,4 +137,4 @@ class InsightSemanal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     semana_id = db.Column(db.Integer, db.ForeignKey("semana.id"))
     texto = db.Column(db.Text)
-    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    criado_em = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))

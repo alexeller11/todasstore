@@ -4,15 +4,23 @@
 {% block conteudo %}
 <h2 class="mb-3"><i class="bi bi-gear-fill"></i> Configurações</h2>
 
-<form method="POST" class="cartao">
+<form method="POST" enctype="multipart/form-data" class="cartao">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <h5 class="mb-3">Dados da loja</h5>
   <div class="mb-2">
     <label class="form-label fw-bold">Nome da loja</label>
     <input type="text" name="nome" class="form-control rounded-3" value="{{ loja.nome or '' }}">
   </div>
   <div class="mb-2">
-    <label class="form-label fw-bold">Logo (link da imagem)</label>
-    <input type="text" name="logo_url" class="form-control rounded-3" value="{{ loja.logo_url or '' }}">
+    <label class="form-label fw-bold">Logo</label>
+    <div class="d-flex align-items-center gap-3">
+      {% if loja.logo_url %}
+        <img src="{{ loja.logo_url }}" alt="Logo" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+      {% endif %}
+      <input type="file" name="logo_file" class="form-control rounded-3" accept="image/*">
+    </div>
+    <div class="form-text">Faça upload de uma imagem ou informe a URL abaixo.</div>
+    <input type="text" name="logo_url" class="form-control rounded-3 mt-1" value="{{ loja.logo_url or '' }}" placeholder="Ou informe a URL da logo">
   </div>
   <div class="mb-2">
     <label class="form-label fw-bold">Instagram</label>
