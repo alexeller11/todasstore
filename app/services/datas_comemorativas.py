@@ -34,6 +34,27 @@ PERIODOS_LIQUIDACAO = [
 ]
 
 
+def estacao_do_ano(data):
+    """Retorna a estação do ano no Hemisfério Sul (Brasil) para a data informada."""
+    m, d = data.month, data.day
+    if (m == 12 and d >= 21) or m in (1, 2) or (m == 3 and d <= 20):
+        return "Verão"
+    if (m == 3 and d >= 21) or m in (4, 5) or (m == 6 and d <= 20):
+        return "Outono"
+    if (m == 6 and d >= 21) or m in (7, 8) or (m == 9 and d <= 22):
+        return "Inverno"
+    return "Primavera"
+
+
+def datas_proximas(data, dias_janela=10):
+    """Retorna datas comemorativas dentro de uma janela de dias antes/depois da data (para dar
+    contexto mesmo quando a data em si não é comemorativa, ex: 'Black Friday está chegando')."""
+    from datetime import timedelta
+    inicio = data - timedelta(days=dias_janela)
+    fim = data + timedelta(days=dias_janela)
+    return datas_da_semana(inicio, fim)
+
+
 def datas_da_semana(data_inicio, data_fim):
     """Retorna lista de nomes de datas comemorativas que caem dentro do intervalo da semana."""
     encontradas = []
