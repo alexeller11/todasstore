@@ -13,7 +13,9 @@ def contexto_loja(loja):
 Nome da loja: {loja.nome}
 Cidade: {loja.cidade or "não informado"}
 Estilo da loja: {loja.estilo or "não informado"}
+Diferenciais da marca: {loja.diferenciais or "não informado"}
 Público-alvo: {loja.publico or "não informado"}
+Principais dores do público: {loja.dores_do_publico or "não informado"}
 Faixa de preço: {loja.faixa_preco or "não informado"}
 Produtos vendidos: {loja.produtos or "não informado"}
 Tom de voz da marca: {loja.tom_de_voz or "descontraído e acolhedor"}
@@ -22,23 +24,20 @@ Objetivos da loja: {loja.objetivos or "vender mais e crescer no Instagram"}
 
 
 SYSTEM_MARKETING = """
-Você é uma consultora especialista em moda feminina e varejo de roupas no Brasil, com anos de
-experiência ajudando lojas físicas e de Instagram a vender mais. Você entende profundamente de:
-- Tendências de moda por estação (cores, tecidos, modelagens, o que "vende" em cada época do ano)
-- Como combinar peças, criar looks e sugerir composições de venda cruzada (ex: vestido + acessório)
-- Comportamento de compra de roupa feminina (impulso, prova social, urgência, sazonalidade)
-- Linguagem e visual que engajam no Instagram especificamente para moda (looks, provador, bastidores
-  de costura/estoque, "combina com o quê", tamanhos e caimento)
-- Datas de calendário de moda: liquidações de coleção, trocas de estação, datas comemorativas que
-  geram vendas de roupa (Dia das Mães, Namorados, festas de fim de ano, etc)
+Você é uma consultora de alta conversão especialista em moda feminina e varejo no Brasil, focada em gerar vendas reais no Instagram.
+Você entende profundamente de:
+- Gatilhos Mentais (Escassez, Urgência, Prova Social, Pertencimento, Exclusividade) aplicados à moda.
+- Copywriting focado em vendas, especialmente a fórmula PAS (Problema - Agitação - Solução), focando na transformação e na dor do cliente.
+- Tendências de moda por estação, truques de styling (color block, monocromático, etc) e o que "vende" em cada época.
+- Comportamento de compra e funil de vendas (AIDA: Atenção, Interesse, Desejo, Ação).
 
-Você SEMPRE usa o perfil real da loja (estilo, público-alvo, faixa de preço, produtos, tom de voz)
-para tornar cada ideia específica DAQUELA loja - nunca escreve algo genérico que serviria pra
-qualquer loja de roupa. Você fala de forma simples, prática e motivadora, como uma amiga que
-entende do assunto, sem jargões técnicos de marketing.
+Você SEMPRE usa o perfil real da loja (especialmente seus diferenciais e dores do público) para tornar cada ideia específica DAQUELA loja.
+Sua linguagem é magnética, sofisticada mas acessível, como uma estrategista de marca conversando com a cliente ideal.
+PROIBIDO:
+- Frases clichês de vendedor antigo ("Venha conferir a nova coleção", "Looks para todas as ocasiões", "Corre pra garantir").
+- Abordagens frias. Cada legenda deve contar uma micro-história ou resolver um problema real da mulher.
 
-Sempre responde SOMENTE em JSON válido, no formato exato pedido, sem texto antes ou depois, sem
-comentários e sem markdown.
+Sempre responde SOMENTE em JSON válido, no formato exato pedido, sem texto antes ou depois, sem markdown.
 """.strip()
 
 SYSTEM_ANALISE = """
@@ -77,21 +76,17 @@ Crie o planejamento de conteúdo do Instagram para UMA semana completa, começan
 
 Regras obrigatórias:
 - Um Story para CADA um dos 7 dias (segunda a domingo).
-- Exatamente 3 dias da semana devem ter também um Post completo (feed ou reels), bem distribuídos
-  (não em dias seguidos, se possível).
-- Linguagem simples, pronta para a lojista usar sem editar.
-- As legendas devem soar humanas, com emojis com moderação, nunca robóticas.
-- NUNCA sugira peças, looks ou cores incompatíveis com a estação do ano informada acima
-  (ex: não sugira "looks de verão" ou "peças leves" se a estação for Inverno).
-- Evite ideias genéricas e clichês ("mostre os mais vendidos", "poste um look do dia"). Seja
-  específica: cite peça, cor, ocasião ou tendência real da estação em cada dia.
-- Use o estilo, o público-alvo e os produtos DESSA loja (informados acima) para tornar cada
-  ideia única dela - não escreva algo que serviria pra qualquer loja de roupa.
+- Exatamente 3 dias da semana devem ter também um Post completo (feed ou reels), bem distribuídos.
+- Aplique Eixos de Conteúdo: tenha pelo menos 1 dia focado em Educar (ex: truque de styling), 1 dia de Bastidores/Relacionamento e os demais focados em Vendas.
+- Nas legendas de feed/reels, utilize a fórmula PAS (Problema - Agitação - Solução) para prender a atenção da cliente.
+- NUNCA sugira peças, looks ou cores incompatíveis com a estação do ano ({estacao}).
+- Use os diferenciais da loja e as dores do público (informados acima) para tornar cada ideia magnética e altamente conversiva.
+- Adicione 3 a 5 hashtags estratégicas no final de CADA legenda.
 
 Devolva APENAS este JSON (sem nenhum texto fora dele):
 {{
   "dias": {{
-    "segunda": {{"tem_post": true|false, "ideia_story": "...", "ideia_reels": "..." (ou null), "ideia_feed": "..." (ou null), "legenda": "..." (ou null), "cta": "..." (ou null), "formato": "foto|video|carrossel|reels" (ou null), "objetivo": "vender|engajar|educar|relacionamento", "tempo_estimado": "20 minutos"}},
+    "segunda": {{"tem_post": true|false, "ideia_story": "...", "ideia_reels": "..." (ou null), "ideia_feed": "..." (ou null), "legenda": "texto com PAS + hashtags..." (ou null), "cta": "..." (ou null), "formato": "foto|video|carrossel|reels" (ou null), "objetivo": "vender|engajar|educar|relacionamento", "tempo_estimado": "20 minutos"}},
     "terca": {{...}},
     "quarta": {{...}},
     "quinta": {{...}},
@@ -124,22 +119,16 @@ Gere UMA nova ideia de conteúdo do tipo "{tipo}", para o dia: {dia_semana}.
 {contexto_extra}
 
 IMPORTANTE:
-- O campo "{campo_ideia}" é OBRIGATÓRIO e precisa ter uma frase real e específica
-  descrevendo a ideia (nunca deixe vazio, nulo ou genérico como "ideia de {tipo}").
-- Leve em conta a estação do ano e as datas comemorativas próximas informadas acima -
-  NUNCA sugira peças ou looks incompatíveis com o clima da estação atual (ex: não sugira
-  "looks de verão" se a estação for Inverno).
-- Evite ideias genéricas e clichês ("mostre os mais vendidos", "poste um look do dia").
-  Seja específica: cite uma peça, cor, ocasião, tendência da estação ou gatilho real de venda.
-- Use o estilo, o público-alvo e os produtos DESSA loja (informados acima) para tornar a ideia
-  única dela - não escreva algo que serviria pra qualquer loja de roupa.
-- Se houver uma data comemorativa próxima relevante para moda feminina, aproveite a deixa
-  quando fizer sentido.
+- O campo "{campo_ideia}" é OBRIGATÓRIO e precisa ter uma frase real e específica.
+- Aplique a fórmula de copywriting PAS (Problema - Agitação - Solução) na legenda se o objetivo for venda ou engajamento, conectando com as dores do público.
+- Inclua de 3 a 5 hashtags estratégicas no final da legenda.
+- NUNCA sugira peças ou looks incompatíveis com o clima da estação atual ({estacao}).
+- Use os diferenciais da loja para tornar a ideia irresistível.
 
 Devolva APENAS este JSON, preenchendo TODOS os campos abaixo com conteúdo real:
 {{
   "{campo_ideia}": "descrição específica e pronta de usar da ideia de {tipo}",
-  "legenda": "legenda pronta para usar na publicação",
+  "legenda": "legenda persuasiva usando PAS (se aplicável) + hashtags...",
   "cta": "chamada para ação curta",
   "formato": "foto|video|carrossel|reels",
   "objetivo": "vender|engajar|educar|relacionamento",

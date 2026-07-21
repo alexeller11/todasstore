@@ -43,6 +43,8 @@ def ver():
         loja.produtos = request.form.get("produtos", loja.produtos)
         loja.tom_de_voz = request.form.get("tom_de_voz", loja.tom_de_voz)
         loja.objetivos = request.form.get("objetivos", loja.objetivos)
+        loja.diferenciais = request.form.get("diferenciais", loja.diferenciais)
+        loja.dores_do_publico = request.form.get("dores_do_publico", loja.dores_do_publico)
 
         db.session.commit()
         flash("Configurações salvas com sucesso!", "success")

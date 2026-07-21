@@ -64,6 +64,16 @@
     <label class="form-label fw-bold">Tom de voz</label>
     <input type="text" name="tom_de_voz" class="form-control rounded-3" value="{{ loja.tom_de_voz or '' }}">
   </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Diferenciais da Marca</label>
+    <div class="form-text mt-0 mb-1">O que faz sua loja ser especial? (ex: curadoria premium, fabricação própria, tecido que não amassa)</div>
+    <textarea name="diferenciais" class="form-control rounded-3" rows="2">{{ loja.diferenciais or '' }}</textarea>
+  </div>
+  <div class="mb-2">
+    <label class="form-label fw-bold">Principais Dores das Clientes</label>
+    <div class="form-text mt-0 mb-1">Quais problemas sua roupa resolve? (ex: não tem tempo de montar look, dificuldade com caimento no quadril)</div>
+    <textarea name="dores_do_publico" class="form-control rounded-3" rows="2">{{ loja.dores_do_publico or '' }}</textarea>
+  </div>
   <div class="mb-3">
     <label class="form-label fw-bold">Objetivos</label>
     <input type="text" name="objetivos" class="form-control rounded-3" value="{{ loja.objetivos or '' }}">

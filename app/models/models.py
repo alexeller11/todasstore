@@ -18,6 +18,8 @@ class Loja(db.Model):
     produtos = db.Column(db.Text)                 # o que a loja vende
     tom_de_voz = db.Column(db.String(255))        # ex: descontraído, elegante
     objetivos = db.Column(db.Text)                # ex: vender mais, ganhar seguidores
+    diferenciais = db.Column(db.Text)             # ex: curadoria premium, fabricação própria
+    dores_do_publico = db.Column(db.Text)         # ex: não tem tempo, não sabe combinar
     segmento = db.Column(db.String(120), default="Moda Feminina")
     horario_funcionamento = db.Column(db.String(120))
     onboarding_concluido = db.Column(db.Boolean, default=False)

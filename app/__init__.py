@@ -16,13 +16,28 @@ def _garantir_colunas_novas():
     if "semana" not in inspetor.get_table_names():
         return
 
-    colunas_existentes = {c["name"] for c in inspetor.get_columns("semana")}
-    if "promocao" not in colunas_existentes:
+    colunas_semana = {c["name"] for c in inspetor.get_columns("semana")}
+    if "promocao" not in colunas_semana:
         try:
             db.session.execute(text("ALTER TABLE semana ADD COLUMN promocao TEXT"))
             db.session.commit()
         except Exception:
             db.session.rollback()
+            
+    if "loja" in inspetor.get_table_names():
+        colunas_loja = {c["name"] for c in inspetor.get_columns("loja")}
+        if "diferenciais" not in colunas_loja:
+            try:
+                db.session.execute(text("ALTER TABLE loja ADD COLUMN diferenciais TEXT"))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
+        if "dores_do_publico" not in colunas_loja:
+            try:
+                db.session.execute(text("ALTER TABLE loja ADD COLUMN dores_do_publico TEXT"))
+                db.session.commit()
+            except Exception:
+                db.session.rollback()
 
 
 def create_app(config_class=Config):
