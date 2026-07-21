@@ -12,18 +12,32 @@ def criar_checklist_padrao(dia_id, salvar=True):
         db.session.commit()
 
 
+def _item_indica(titulo, palavras_chave):
+    """True se o item (pelo texto) representa um story, post, feed ou reels."""
+    texto_lower = titulo.lower()
+    return any(p in texto_lower for p in palavras_chave)
+
+
+def _recalcular_selos_do_dia(dia):
+    """Recomputa story_feito e post_feito analisando TODOS os itens do dia,
+    de forma determinística. Substitui a lógica antiga que só setava True
+    e nunca resetava False ao desmarcar — o que deixava o selo "preso" em verde
+    e dava a impressão de que o checklist "não estava salvando"."""
+    itens = list(dia.checklist_items)
+    dia.story_feito = any(
+        i.concluido and _item_indica(i.texto, ["story"]) for i in itens
+    )
+    dia.post_feito = any(
+        i.concluido and _item_indica(i.texto, ["feed", "reels", "post"]) for i in itens
+    )
+
+
 def alternar_item(item_id):
     item = ChecklistItem.query.get_or_404(item_id)
     item.concluido = not item.concluido
     db.session.commit()
 
-    # Atualiza sinalizadores do dia (story/post feitos) com base em palavras-chave simples
-    dia = item.dia
-    texto_lower = item.texto.lower()
-    if "story" in texto_lower and item.concluido:
-        dia.story_feito = True
-    if ("feed" in texto_lower or "reels" in texto_lower) and item.concluido:
-        dia.post_feito = True
+    _recalcular_selos_do_dia(item.dia)
     db.session.commit()
     return item
 

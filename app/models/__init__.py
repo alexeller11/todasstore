@@ -8,6 +8,7 @@ from app.models.models import (
     Concorrente,
     AnaliseConcorrente,
     InsightSemanal,
+    VersaoConteudo,
 )
 
 __all__ = [
@@ -20,4 +21,5 @@ __all__ = [
     "Concorrente",
     "AnaliseConcorrente",
     "InsightSemanal",
+    "VersaoConteudo",
 ]

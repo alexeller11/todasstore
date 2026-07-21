@@ -57,6 +57,48 @@ def excluir(ideia_id):
     return redirect(url_for("banco_ideias.listar"))
 
 
+@bp.route("/salvar-do-dia/<int:dia_id>/<tipo>", methods=["POST"])
+def salvar_do_dia(dia_id, tipo):
+    """Copia o conteúdo de um dia (story/reels/feed) para o Banco de Ideias,
+    marcando origem='ia'. Resolve a sensação 'gero e some', dando à lojista
+    um botão de 1 clique para preservar um conteúdo que gostou."""
+    from app.models import Dia
+    dia = Dia.query.get_or_404(dia_id)
+
+    if tipo == "story":
+        conteudo = dia.ideia_story
+    elif tipo == "reels":
+        conteudo = dia.ideia_reels
+    elif tipo == "feed":
+        conteudo = dia.ideia_feed
+    else:
+        flash("Tipo de conteúdo inválido.", "danger")
+        return redirect(url_for("planejamento.ver_dia", dia_id=dia_id))
+
+    if not conteudo:
+        flash("Nada para salvar: ainda não há ideia desse tipo neste dia. "
+              "Gere uma ideia antes de salvar no Banco de Ideias.", "warning")
+        return redirect(url_for("planejamento.ver_dia", dia_id=dia_id))
+
+    nome_tipo = {"story": "Story", "reels": "Reels", "feed": "Feed"}[tipo]
+    data_fmt = dia.data.strftime("%d/%m/%Y")
+    titulo = f"{nome_tipo} de {dia.dia_semana.capitalize()} ({data_fmt})"
+
+    ideia = Ideia(
+        titulo=titulo,
+        tipo=tipo,
+        conteudo=conteudo,
+        legenda=dia.legenda or "",
+        cta=dia.cta or "",
+        tags=dia.objetivo or "",
+        origem="ia",
+    )
+    db.session.add(ideia)
+    db.session.commit()
+    flash(f"{nome_tipo} salvo no Banco de Ideias! 💾", "success")
+    return redirect(url_for("planejamento.ver_dia", dia_id=dia_id))
+
+
 @bp.route("/usar-no-dia/<int:ideia_id>/<int:dia_id>", methods=["POST"])
 def usar_no_dia(ideia_id, dia_id):
     """Copia uma ideia salva para dentro de um dia do planejamento."""

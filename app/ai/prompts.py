@@ -33,6 +33,13 @@ Você entende profundamente de:
 
 Você SEMPRE usa o perfil real da loja (especialmente seus diferenciais e dores do público) para tornar cada ideia específica DAQUELA loja.
 Sua linguagem é magnética, sofisticada mas acessível, como uma estrategista de marca conversando com a cliente ideal.
+
+REGRAS DE QUALIDADE (são OBRIGATÓRIAS e serão avaliadas):
+- A legenda de feed/reels deve ter ENTRE 80 E 220 palavras. Nem curta demais (não entrega valor), nem longa demais (perde atenção). Em stories, a legenda pode ser mais curta (30 a 90 palavras), mas ainda específica.
+- NUNCA devolva conteúdo genérico ("venha conferir", "novidades incríveis"). Sempre cite um produto/estilo/reação da cliente real da loja em questão.
+- Para todo feed/reels, preencha o campo "descricao_visual" com a cena concreta da imagem/vídeo (ex: modelo + peça + ângulo + cenário), para a lojista saber O QUE fotografar/gravar.
+- Aplique a fórmula PAS (Problema - Agitação - Solução) na legenda sempre que o objetivo for venda ou engajamento.
+
 PROIBIDO:
 - Frases clichês de vendedor antigo ("Venha conferir a nova coleção", "Looks para todas as ocasiões", "Corre pra garantir").
 - Abordagens frias. Cada legenda deve contar uma micro-história ou resolver um problema real da mulher.
@@ -86,7 +93,7 @@ Regras obrigatórias:
 Devolva APENAS este JSON (sem nenhum texto fora dele):
 {{
   "dias": {{
-    "segunda": {{"tem_post": true|false, "ideia_story": "...", "ideia_reels": "..." (ou null), "ideia_feed": "..." (ou null), "legenda": "texto com PAS + hashtags..." (ou null), "cta": "..." (ou null), "formato": "foto|video|carrossel|reels" (ou null), "objetivo": "vender|engajar|educar|relacionamento", "tempo_estimado": "20 minutos"}},
+    "segunda": {{"tem_post": true|false, "ideia_story": "...", "ideia_reels": "..." (ou null), "ideia_feed": "..." (ou null), "legenda": "texto com PAS + hashtags, 80-220 palavras..." (ou null), "descricao_visual": "cena concreta da foto/video..." (ou null), "cta": "..." (ou null), "formato": "foto|video|carrossel|reels" (ou null), "objetivo": "vender|engajar|educar|relacionamento", "tempo_estimado": "20 minutos"}},
     "terca": {{...}},
     "quarta": {{...}},
     "quinta": {{...}},
@@ -99,7 +106,7 @@ Devolva APENAS este JSON (sem nenhum texto fora dele):
     return SYSTEM_MARKETING, user_prompt
 
 
-def prompt_nova_ideia_dia(loja, dia_semana, tipo, data=None, estacao=None, datas_proximas=None, contexto_extra=""):
+def prompt_nova_ideia_dia(loja, dia_semana, tipo, data=None, estacao=None, datas_proximas=None, promocao=None, contexto_extra=""):
     campo_ideia = {"story": "ideia_story", "reels": "ideia_reels", "feed": "ideia_feed"}.get(tipo, "ideia_story")
 
     contexto_temporal = ""
@@ -110,26 +117,37 @@ def prompt_nova_ideia_dia(loja, dia_semana, tipo, data=None, estacao=None, datas
     if datas_proximas:
         contexto_temporal += "Datas comemorativas próximas: " + ", ".join(datas_proximas) + ".\n"
 
+    promocao_txt = ""
+    if promocao:
+        promocao_txt = f"""
+Promoção/ação especial da SEMANA deste dia (MUITO IMPORTANTE): "{promocao}"
+Encaixe essa promoção de forma natural na ideia de {tipo} se fizer sentido, sem parecer forçado.
+""".strip()
+
     user_prompt = f"""
 Perfil da loja:
 {contexto_loja(loja)}
 
 {contexto_temporal}
+{promocao_txt}
 Gere UMA nova ideia de conteúdo do tipo "{tipo}", para o dia: {dia_semana}.
 {contexto_extra}
 
 IMPORTANTE:
-- O campo "{campo_ideia}" é OBRIGATÓRIO e precisa ter uma frase real e específica.
+- O campo "{campo_ideia}" é OBRIGATÓRIO e precisa ter uma frase real e específica, citando produto/peça/reação da cliente.
 - Aplique a fórmula de copywriting PAS (Problema - Agitação - Solução) na legenda se o objetivo for venda ou engajamento, conectando com as dores do público.
+- A legenda precisa ter ENTRE 80 E 220 palavras (se for story: 30 a 90 palavras). Não seja superficial.
 - Inclua de 3 a 5 hashtags estratégicas no final da legenda.
+- O campo "descricao_visual" descreve a CENA concreta (peça + ângulo + cenário + pessoa), para a lojista saber o que fotografar/gravar.
 - NUNCA sugira peças ou looks incompatíveis com o clima da estação atual ({estacao}).
 - Use os diferenciais da loja para tornar a ideia irresistível.
 
 Devolva APENAS este JSON, preenchendo TODOS os campos abaixo com conteúdo real:
 {{
   "{campo_ideia}": "descrição específica e pronta de usar da ideia de {tipo}",
-  "legenda": "legenda persuasiva usando PAS (se aplicável) + hashtags...",
-  "cta": "chamada para ação curta",
+  "descricao_visual": "cena concreta: peça + ângulo + cenário + modelo/referência visual",
+  "legenda": "legenda persuasiva usando PAS (se aplicável) + hashtags, 80-220 palavras...",
+  "cta": "chamada para ação curta e específica",
   "formato": "foto|video|carrossel|reels",
   "objetivo": "vender|engajar|educar|relacionamento",
   "tempo_estimado": "15 minutos"

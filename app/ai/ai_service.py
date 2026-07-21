@@ -34,7 +34,7 @@ def _chamar_modelo(mensagens, json_mode=True, temperatura=0.8):
                 model=modelo,
                 messages=mensagens,
                 temperature=temperatura,
-                max_tokens=2000,
+                max_tokens=4000,  # legendas PAS completas + hashtags + descricao_visual
             )
             if json_mode:
                 kwargs["response_format"] = {"type": "json_object"}
