@@ -35,10 +35,12 @@ SYSTEM_ANALISE = (
 )
 
 
-def prompt_planejamento_semana(loja, data_inicio, datas_comemorativas=None, promocao=None):
+def prompt_planejamento_semana(loja, data_inicio, datas_comemorativas=None, promocao=None, estacao=None):
     datas_txt = ""
     if datas_comemorativas:
         datas_txt = "Datas comemorativas nesta semana: " + ", ".join(datas_comemorativas) + "."
+
+    estacao_txt = f"Estação do ano no Brasil nesta semana: {estacao}." if estacao else ""
 
     promocao_txt = ""
     if promocao:
@@ -53,6 +55,7 @@ Perfil da loja:
 {contexto_loja(loja)}
 
 Crie o planejamento de conteúdo do Instagram para UMA semana completa, começando em {data_inicio}.
+{estacao_txt}
 {datas_txt}
 {promocao_txt}
 
@@ -62,6 +65,10 @@ Regras obrigatórias:
   (não em dias seguidos, se possível).
 - Linguagem simples, pronta para a lojista usar sem editar.
 - As legendas devem soar humanas, com emojis com moderação, nunca robóticas.
+- NUNCA sugira peças, looks ou cores incompatíveis com a estação do ano informada acima
+  (ex: não sugira "looks de verão" ou "peças leves" se a estação for Inverno).
+- Evite ideias genéricas e clichês ("mostre os mais vendidos", "poste um look do dia"). Seja
+  específica: cite peça, cor, ocasião ou tendência real da estação em cada dia.
 
 Devolva APENAS este JSON (sem nenhum texto fora dele):
 {{
@@ -79,18 +86,35 @@ Devolva APENAS este JSON (sem nenhum texto fora dele):
     return SYSTEM_MARKETING, user_prompt
 
 
-def prompt_nova_ideia_dia(loja, dia_semana, tipo, contexto_extra=""):
+def prompt_nova_ideia_dia(loja, dia_semana, tipo, data=None, estacao=None, datas_proximas=None, contexto_extra=""):
     campo_ideia = {"story": "ideia_story", "reels": "ideia_reels", "feed": "ideia_feed"}.get(tipo, "ideia_story")
+
+    contexto_temporal = ""
+    if data:
+        contexto_temporal += f"Data: {data} ({dia_semana}).\n"
+    if estacao:
+        contexto_temporal += f"Estação do ano no Brasil nesta data: {estacao}.\n"
+    if datas_proximas:
+        contexto_temporal += "Datas comemorativas próximas: " + ", ".join(datas_proximas) + ".\n"
 
     user_prompt = f"""
 Perfil da loja:
 {contexto_loja(loja)}
 
+{contexto_temporal}
 Gere UMA nova ideia de conteúdo do tipo "{tipo}", para o dia: {dia_semana}.
 {contexto_extra}
 
-IMPORTANTE: o campo "{campo_ideia}" é OBRIGATÓRIO e precisa ter uma frase real e específica
-descrevendo a ideia (nunca deixe vazio, nulo ou genérico como "ideia de {tipo}").
+IMPORTANTE:
+- O campo "{campo_ideia}" é OBRIGATÓRIO e precisa ter uma frase real e específica
+  descrevendo a ideia (nunca deixe vazio, nulo ou genérico como "ideia de {tipo}").
+- Leve em conta a estação do ano e as datas comemorativas próximas informadas acima -
+  NUNCA sugira peças ou looks incompatíveis com o clima da estação atual (ex: não sugira
+  "looks de verão" se a estação for Inverno).
+- Evite ideias genéricas e clichês ("mostre os mais vendidos", "poste um look do dia").
+  Seja específica: cite uma peça, cor, ocasião, tendência da estação ou gatilho real de venda.
+- Se houver uma data comemorativa próxima relevante para moda feminina, aproveite a deixa
+  quando fizer sentido.
 
 Devolva APENAS este JSON, preenchendo TODOS os campos abaixo com conteúdo real:
 {{
