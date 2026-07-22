@@ -31,11 +31,15 @@ def inicio():
 
     stats = analytics_service.progresso_mes(mes.id)
 
+    # semana atual, para a faixa de calendário rápido na home
+    semana_atual = dia_hoje.semana if dia_hoje else None
+
     return render_template(
         "dashboard.html",
         loja=loja,
         mes=mes,
         dia_hoje=dia_hoje,
+        semana_atual=semana_atual,
         proximo_conteudo=proximo_conteudo,
         stats=stats,
         hoje=hoje,
