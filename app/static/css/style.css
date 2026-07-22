@@ -203,6 +203,128 @@ h1, h2, h3, h4, .titulo-app {
 }
 .menu-inferior i { font-size: 1.3rem; }
 
+/* ---------- CTA "O que faremos hoje" ---------- */
+.cta-hoje {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: linear-gradient(135deg, var(--dourado), #c98a2e);
+  color: white;
+  border-radius: var(--raio);
+  padding: 22px 24px;
+  box-shadow: var(--sombra-forte);
+  margin-bottom: 18px;
+  transition: transform .15s ease;
+}
+.cta-hoje:active { transform: scale(0.98); }
+.cta-hoje:hover { color: white; }
+.cta-hoje-texto { min-width: 0; }
+.cta-hoje-selo {
+  display: inline-block;
+  background: rgba(255,255,255,0.22);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: .72rem;
+  font-weight: 700;
+  font-family: 'Quicksand', sans-serif;
+  margin-bottom: 8px;
+}
+.cta-hoje h3 { color: white; margin-top: 0; }
+.cta-hoje-resumo {
+  color: rgba(255,255,255,0.92);
+  font-size: .88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cta-hoje-seta { font-size: 2rem; flex-shrink: 0; opacity: 0.9; }
+
+/* ---------- Faixa da semana (calendário rápido) ---------- */
+.faixa-semana {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.chip-dia {
+  flex: 1 0 auto;
+  min-width: 46px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px 8px;
+  border-radius: 14px;
+  background: var(--rosa-suave);
+  text-decoration: none;
+  color: var(--texto);
+  border: 2px solid transparent;
+}
+.chip-dia:hover { color: var(--texto); background: var(--rosa-medio); }
+.chip-dia.hoje {
+  background: linear-gradient(135deg, var(--ameixa-clara), var(--ameixa));
+  color: white;
+}
+.chip-dia-nome { font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: .68rem; text-transform: uppercase; opacity: .8; }
+.chip-dia-numero { font-family: 'Quicksand', sans-serif; font-weight: 700; font-size: 1.05rem; }
+.chip-dia-ponto { width: 7px; height: 7px; border-radius: 50%; background: transparent; border: 1.5px solid currentColor; opacity: .5; }
+.chip-dia-ponto.planejado { background: var(--dourado); border-color: var(--dourado); opacity: 1; }
+.chip-dia-ponto.feito { background: var(--verde-sucesso); border-color: var(--verde-sucesso); opacity: 1; }
+
+/* ---------- Mini calendário do mês ---------- */
+.mini-calendario {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+.mini-calendario-cabecalho {
+  text-align: center;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: .68rem;
+  color: var(--texto-suave);
+  padding-bottom: 4px;
+}
+.dia-mini {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 7px 2px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--texto);
+}
+.dia-mini:hover { background: var(--rosa-suave); color: var(--texto); }
+.dia-mini.fora-do-mes { opacity: .32; }
+.dia-mini.hoje { background: var(--ameixa); color: white; font-weight: 700; }
+.dia-mini-numero { font-size: .82rem; }
+.dia-mini-ponto { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
+.dia-mini-ponto.planejado { background: var(--dourado); }
+.dia-mini-ponto.feito { background: var(--verde-sucesso); }
+.dia-mini.hoje .dia-mini-ponto.planejado { background: var(--rosa-suave); }
+.dia-mini.hoje .dia-mini-ponto.feito { background: var(--rosa-suave); }
+
+.mini-calendario-legenda {
+  display: flex;
+  gap: 14px;
+  margin-top: 12px;
+  font-size: .74rem;
+  color: var(--texto-suave);
+  flex-wrap: wrap;
+}
+.legenda-ponto {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: 1.5px solid var(--texto-suave);
+  margin-right: 4px;
+  vertical-align: middle;
+}
+.legenda-ponto.feito { background: var(--verde-sucesso); border-color: var(--verde-sucesso); }
+.legenda-ponto.planejado { background: var(--dourado); border-color: var(--dourado); }
+
 /* ---------- Dias da semana (grade) ---------- */
 .grade-dias { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; }
 .card-dia {
