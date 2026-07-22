@@ -6,20 +6,54 @@ Isso facilita ajustar o "jeito de falar" da assistente sem mexer na lógica do s
 
 
 def contexto_loja(loja):
-    """Monta um bloco de texto com o perfil da loja, usado em quase todos os prompts."""
+    """Monta um bloco de texto com o perfil da loja, usado em quase todos os prompts.
+
+    Se diferenciais ou dores_do_publico estiverem vazios (comum em lojas que
+    ainda nao preencheram o perfil completo), orienta a IA a inferir a partir
+    dos outros campos - evitando que a saida fique superficial por falta de
+    informacao especifica. Em vez de simplesmente escrever "nao informado",
+    sinalizamos que ela deve INFERIR e usar de forma concreta."""
     if not loja:
-        return "Loja de roupas femininas (perfil ainda não configurado)."
+        return "Loja de roupas femininas (perfil ainda nao configurado)."
+
+    nome = loja.nome or "Loja de moda feminina"
+    estilo = loja.estilo or "moda feminina"
+    publico = loja.publico or "mulheres"
+    faixa = loja.faixa_preco or "preco acessivel"
+    produtos = loja.produtos or "roupas femininas"
+    tom = loja.tom_de_voz or "descontrado e acolhedor"
+    objetivos = loja.objetivos or "vender mais e crescer no Instagram"
+
+    if loja.diferenciais and loja.dores_do_publico:
+        # caso ideal: lojista preencheu tudo
+        diferenciais_txt = loja.diferenciais
+        dores_txt = loja.dores_do_publico
+        nota_ia = ""
+    else:
+        # perfil incompleto: pede inferencia e avisa sobre o risco de generico
+        diferenciais_txt = loja.diferenciais or "(NAO INFORMADO - INFIRA a partir do estilo, faixa de preco e produtos; NAO use cliches)"
+        dores_txt = loja.dores_do_publico or "(NAO INFORMADO - INFIRA dores reais que esse publico costuma ter com moda; NAO use dores genericas como 'nao sabe o que vestir')"
+        nota_ia = (
+            "\n\nATENCAO: a lojista ainda nao preencheu os campos de "
+            "diferenciais e dores do publico. Voce precisa INFERIR a partir "
+            "do que esta acima (estilo, publico, faixa de preco, produtos) "
+            "para gerar conteudo especifico. PROIBIDO cair em frases "
+            "genericas como 'novidades incriveis' ou 'looks para todas as "
+            "ocasioes'. Escolha uma peca concreta e explore UM detalhe "
+            "especifico dela (tecido, modelagem, ocasiao)."
+        )
+
     return f"""
-Nome da loja: {loja.nome}
-Cidade: {loja.cidade or "não informado"}
-Estilo da loja: {loja.estilo or "não informado"}
-Diferenciais da marca: {loja.diferenciais or "não informado"}
-Público-alvo: {loja.publico or "não informado"}
-Principais dores do público: {loja.dores_do_publico or "não informado"}
-Faixa de preço: {loja.faixa_preco or "não informado"}
-Produtos vendidos: {loja.produtos or "não informado"}
-Tom de voz da marca: {loja.tom_de_voz or "descontraído e acolhedor"}
-Objetivos da loja: {loja.objetivos or "vender mais e crescer no Instagram"}
+Nome da loja: {nome}
+Cidade: {loja.cidade or "nao informado"}
+Estilo da loja: {estilo}
+Diferenciais da marca: {diferenciais_txt}
+Publico-alvo: {publico}
+Principais dores do publico: {dores_txt}
+Faixa de preco: {faixa}
+Produtos vendidos: {produtos}
+Tom de voz da marca: {tom}
+Objetivos da loja: {objetivos}{nota_ia}
 """.strip()
 
 

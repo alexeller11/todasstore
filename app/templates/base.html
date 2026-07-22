@@ -39,6 +39,39 @@
       {% endif %}
     {% endwith %}
 
+    {# Alerta de perfil incompleto - os campos diferenciais e dores_do_publico sao
+       essenciais para a IA gerar conteudo especifico (nao superficial). Mostra o
+       banner apenas quando a loja existe e falta pelo menos um deles. Pode ser
+       fechado pela lojista (via JS, sem persistir) para nao incomodar. #}
+    {% if loja_atual and loja_atual.onboarding_concluido
+          and (not loja_atual.diferenciais or not loja_atual.dores_do_publico) %}
+      <div id="alerta-perfil-ia" class="alert rounded-4 d-flex align-items-start gap-2" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+        <i class="bi bi-stars fs-5 mt-1"></i>
+        <div class="flex-grow-1">
+          <strong>Sua IA pode ficar genérica ✨</strong>
+          <div class="texto-suave" style="font-size:.86rem;">
+            {% if not loja_atual.diferenciais and not loja_atual.dores_do_publico %}
+              Faltam <strong>2 campos chave</strong> para a IA criar conteúdo
+              específico para a sua loja:
+              <em>Diferenciais da Marca</em> e <em>Dores das Clientes</em>.
+            {% elif not loja_atual.diferenciais %}
+              Falta preencher <strong>Diferenciais da Marca</strong> para a IA
+              destacar o que torna sua loja única.
+            {% else %}
+              Falta preencher <strong>Dores das Clientes</strong> para a IA
+              conectar com os problemas que suas clientes sofrem.
+            {% endif %}
+          </div>
+          <a href="{{ url_for('configuracoes.ver') }}" class="btn btn-sm rounded-pill mt-2" style="background: var(--ameixa); color: white; border:none;">
+            <i class="bi bi-pencil-fill"></i> Preencher agora
+          </a>
+          <button type="button" class="btn btn-sm ms-2 texto-suave" style="border:none; background:transparent;" onclick="document.getElementById('alerta-perfil-ia').remove(); this.remove();">
+            <i class="bi bi-x-lg"></i> Lembrar depois
+          </button>
+        </div>
+      </div>
+    {% endif %}
+
     {% block conteudo %}{% endblock %}
   </div>
 
