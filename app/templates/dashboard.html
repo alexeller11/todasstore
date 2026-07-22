@@ -3,21 +3,24 @@
 
 {% block conteudo %}
 
+{% set abrev_dia = {'segunda':'Seg','terca':'Ter','quarta':'Qua','quinta':'Qui','sexta':'Sex','sabado':'Sáb','domingo':'Dom'} %}
+
+<!-- Boas-vindas + progresso do mês -->
 <div class="cartao-destaque">
   <div class="d-flex justify-content-between align-items-start">
     <div>
       <div class="opacity-75 mb-1">{{ mes.nome }} de {{ mes.ano }}</div>
-      <h2 class="mb-2">Você está indo bem! 🌸</h2>
+      <h2 class="mb-0">Oi! Vamos criar hoje? 🌸</h2>
     </div>
     <div class="text-end">
       <div class="fs-3 fw-bold">{{ stats.percentual_conclusao }}%</div>
       <div class="opacity-75" style="font-size:.8rem;">do mês concluído</div>
     </div>
   </div>
-  <div class="progresso-container mt-2">
+  <div class="progresso-container mt-3">
     <div class="progresso-barra" style="width: {{ stats.percentual_conclusao }}%;"></div>
   </div>
-  <div class="d-flex gap-4 mt-3 flex-wrap">
+  <div class="d-flex gap-4 mt-3 flex-wrap" style="font-size:.9rem;">
     <div><i class="bi bi-camera-reels-fill"></i> {{ stats.stories_feitos }} Stories feitos</div>
     <div><i class="bi bi-grid-3x3-gap-fill"></i> {{ stats.posts_feitos }} Posts feitos</div>
     {% if stats.dias_atrasados %}
@@ -26,25 +29,75 @@
   </div>
 </div>
 
-<!-- Conteúdo de hoje -->
+<!-- CTA principal: O que faremos hoje -->
+<a href="{{ url_for('planejamento.ver_dia', dia_id=dia_hoje.id) if dia_hoje else url_for('planejamento.ver_mes', ano=mes.ano, numero=mes.numero) }}"
+   class="cta-hoje text-decoration-none">
+  <div class="cta-hoje-texto">
+    <span class="cta-hoje-selo"><i class="bi bi-calendar-heart"></i> Hoje, {{ hoje.strftime('%d/%m') }}</span>
+    <h3 class="mb-1">O que vamos fazer hoje? ✨</h3>
+    {% if dia_hoje and (dia_hoje.ideia_story or dia_hoje.tem_post) %}
+      <p class="mb-0 cta-hoje-resumo">
+        {{ dia_hoje.ideia_story or dia_hoje.ideia_feed or dia_hoje.ideia_reels }}
+      </p>
+    {% else %}
+      <p class="mb-0 cta-hoje-resumo">Toque para ver ou planejar o conteúdo de hoje</p>
+    {% endif %}
+  </div>
+  <div class="cta-hoje-seta"><i class="bi bi-arrow-right-circle-fill"></i></div>
+</a>
+
+<!-- Faixa da semana atual -->
+{% if semana_atual %}
 <div class="cartao">
-  <h4><i class="bi bi-calendar-heart"></i> Hoje ({{ hoje.strftime('%d/%m') }})</h4>
-  {% if dia_hoje and (dia_hoje.ideia_story or dia_hoje.tem_post) %}
-    <p class="mb-2"><strong>Story:</strong> {{ dia_hoje.ideia_story or "ainda não planejado" }}</p>
-    {% if dia_hoje.tem_post %}
-      <p class="mb-2"><strong>Post do dia:</strong> {{ dia_hoje.ideia_feed or dia_hoje.ideia_reels }}</p>
-    {% endif %}
-    <a href="{{ url_for('planejamento.ver_dia', dia_id=dia_hoje.id) }}" class="btn-app btn-primario mt-2">
-      <i class="bi bi-eye"></i> Ver conteúdo de hoje
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h4 class="mb-0"><i class="bi bi-calendar-week"></i> Essa semana</h4>
+    <a href="{{ url_for('planejamento.ver_semana', semana_id=semana_atual.id) }}" class="texto-suave" style="font-size:.82rem;">
+      Ver semana <i class="bi bi-chevron-right"></i>
     </a>
-  {% else %}
-    <p class="texto-suave">Ainda não há conteúdo planejado para hoje.</p>
-    {% if dia_hoje %}
-    <a href="{{ url_for('planejamento.ver_semana', semana_id=dia_hoje.semana_id) }}" class="btn-app btn-dourado mt-2">
-      <i class="bi bi-stars"></i> Planejar essa semana
+  </div>
+  <div class="faixa-semana">
+    {% for dia in semana_atual.dias %}
+      {% set tem_conteudo = dia.ideia_story or dia.tem_post %}
+      <a href="{{ url_for('planejamento.ver_dia', dia_id=dia.id) }}"
+         class="chip-dia {% if dia.data == hoje %}hoje{% endif %}">
+        <span class="chip-dia-nome">{{ abrev_dia.get(dia.dia_semana, dia.dia_semana[:3]) }}</span>
+        <span class="chip-dia-numero">{{ dia.data.day }}</span>
+        <span class="chip-dia-ponto {% if dia.dia_completo %}feito{% elif tem_conteudo %}planejado{% endif %}"></span>
+      </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<!-- Mini calendário do mês -->
+<div class="cartao">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h4 class="mb-0"><i class="bi bi-calendar3"></i> {{ mes.nome }}</h4>
+    <a href="{{ url_for('planejamento.ver_mes', ano=mes.ano, numero=mes.numero) }}" class="texto-suave" style="font-size:.82rem;">
+      Ver mês <i class="bi bi-chevron-right"></i>
     </a>
-    {% endif %}
-  {% endif %}
+  </div>
+  <div class="mini-calendario">
+    {% for nome_abrev in ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'] %}
+      <div class="mini-calendario-cabecalho">{{ nome_abrev }}</div>
+    {% endfor %}
+    {% for semana in mes.semanas %}
+      {% for dia in semana.dias %}
+        {% set tem_conteudo = dia.ideia_story or dia.tem_post %}
+        {% set fora_do_mes = dia.data.month != mes.numero %}
+        <a href="{{ url_for('planejamento.ver_dia', dia_id=dia.id) }}"
+           class="dia-mini {% if fora_do_mes %}fora-do-mes{% endif %} {% if dia.data == hoje %}hoje{% endif %}">
+          <span class="dia-mini-numero">{{ dia.data.day }}</span>
+          <span class="dia-mini-ponto {% if dia.dia_completo %}feito{% elif tem_conteudo %}planejado{% endif %}"></span>
+        </a>
+      {% endfor %}
+    {% endfor %}
+  </div>
+  <div class="mini-calendario-legenda">
+    <span><span class="legenda-ponto feito"></span> Feito</span>
+    <span><span class="legenda-ponto planejado"></span> Planejado</span>
+    <span><span class="legenda-ponto"></span> Vazio</span>
+  </div>
 </div>
 
 <!-- Próximo conteúdo -->
@@ -61,7 +114,7 @@
 
 <!-- Acesso rápido ao mês -->
 <div class="cartao">
-  <h4><i class="bi bi-calendar3"></i> Seu planejamento do mês</h4>
+  <h4><i class="bi bi-stars"></i> Planejamento do mês</h4>
   <p class="texto-suave">Veja todas as semanas de {{ mes.nome }} e gere ideias com a IA.</p>
   <a href="{{ url_for('planejamento.ver_mes', ano=mes.ano, numero=mes.numero) }}" class="btn-app btn-primario">
     <i class="bi bi-calendar2-week"></i> Abrir planejamento do mês
