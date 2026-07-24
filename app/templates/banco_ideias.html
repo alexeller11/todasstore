@@ -6,12 +6,24 @@
 
 <form method="GET" class="d-flex gap-2 mb-3">
   <input type="text" name="busca" value="{{ busca }}" class="form-control rounded-pill" placeholder="Buscar ideia...">
+  {% if apenas_favoritas %}<input type="hidden" name="favoritas" value="1">{% endif %}
+  {% if tipo %}<input type="hidden" name="tipo" value="{{ tipo }}">{% endif %}
   <button class="btn-app btn-secundario" style="width:auto; padding: 10px 18px;"><i class="bi bi-search"></i></button>
 </form>
 
+<div class="d-flex gap-2 mb-2">
+  <a href="{{ url_for('banco_ideias.listar', busca=busca, tipo=tipo) }}" class="btn btn-sm rounded-pill {% if not apenas_favoritas %}btn-app btn-primario{% else %}btn-app btn-secundario{% endif %}" style="width:auto; padding:8px 16px;">Todas</a>
+  <a href="{{ url_for('banco_ideias.listar', busca=busca, tipo=tipo, favoritas=1) }}" class="btn btn-sm rounded-pill {% if apenas_favoritas %}btn-app btn-primario{% else %}btn-app btn-secundario{% endif %}" style="width:auto; padding:8px 16px;"><i class="bi bi-star-fill"></i> Favoritas</a>
+</div>
+
 <div class="d-flex gap-2 mb-3">
-  <a href="{{ url_for('banco_ideias.listar') }}" class="btn btn-sm rounded-pill {% if not apenas_favoritas %}btn-app btn-primario{% else %}btn-app btn-secundario{% endif %}" style="width:auto; padding:8px 16px;">Todas</a>
-  <a href="{{ url_for('banco_ideias.listar', favoritas=1) }}" class="btn btn-sm rounded-pill {% if apenas_favoritas %}btn-app btn-primario{% else %}btn-app btn-secundario{% endif %}" style="width:auto; padding:8px 16px;"><i class="bi bi-star-fill"></i> Favoritas</a>
+  {% for valor, rotulo, icone in [('', 'Todos os tipos', 'bi-grid'), ('story', 'Story', 'bi-camera-reels-fill'), ('reels', 'Reels', 'bi-film'), ('feed', 'Feed', 'bi-grid-3x3-gap-fill')] %}
+    <a href="{{ url_for('banco_ideias.listar', busca=busca, favoritas=(1 if apenas_favoritas else None), tipo=valor) }}"
+       class="btn btn-sm rounded-pill {% if tipo == valor %}btn-app btn-primario{% else %}btn-app btn-secundario{% endif %}"
+       style="width:auto; padding:6px 14px; font-size:.82rem;">
+      <i class="bi {{ icone }}"></i> {{ rotulo }}
+    </a>
+  {% endfor %}
 </div>
 
 <button class="btn-app btn-dourado mb-3" data-bs-toggle="collapse" data-bs-target="#formNovaIdeia">

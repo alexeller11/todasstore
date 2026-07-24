@@ -9,6 +9,7 @@ bp = Blueprint("banco_ideias", __name__, url_prefix="/ideias")
 def listar():
     busca = request.args.get("busca", "").strip()
     apenas_favoritas = request.args.get("favoritas") == "1"
+    tipo = request.args.get("tipo", "").strip()
 
     query = Ideia.query
     if busca:
@@ -18,9 +19,13 @@ def listar():
         )
     if apenas_favoritas:
         query = query.filter_by(favorito=True)
+    if tipo in ("story", "reels", "feed"):
+        query = query.filter_by(tipo=tipo)
 
     ideias = query.order_by(Ideia.criado_em.desc()).all()
-    return render_template("banco_ideias.html", ideias=ideias, busca=busca, apenas_favoritas=apenas_favoritas)
+    return render_template(
+        "banco_ideias.html", ideias=ideias, busca=busca, apenas_favoritas=apenas_favoritas, tipo=tipo
+    )
 
 
 @bp.route("/nova", methods=["POST"])

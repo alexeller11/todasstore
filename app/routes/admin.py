@@ -10,10 +10,11 @@ SQL `IF NOT EXISTS` (compativel com PostgreSQL e SQLite via Inspector),
 sem depender de Alembic. Idempotente e segura para rodar multiplas vezes.
 
 Protecao: requer um token passado via query string `?token=...` cujo valor deve
-ser igual ao da variavel de ambiente `ADMIN_SYNC_TOKEN`. Se essa variavel nao
-estiver setada, em dev local a rota funciona sem auth (seguro por default em dev,
-ja que a rota so roda contra SQLite). Em producao, defina `ADMIN_SYNC_TOKEN`
-no painel do Render e use `?token=...` para chamar.
+ser igual ao da variavel de ambiente `ADMIN_SYNC_TOKEN`. Em dev/test local (sem
+essa variavel definida) a rota funciona sem auth, para facilitar o trabalho no
+dia a dia. Em producao (FLASK_ENV=production), a rota SEMPRE exige o token -
+se `ADMIN_SYNC_TOKEN` nao estiver configurada no Render, a rota fica bloqueada
+por padrao (falha fechada), em vez de ficar aberta para qualquer pessoa.
 """
 import os
 
@@ -27,10 +28,16 @@ bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 def _autenticado():
     """Em dev/test (sem ADMIN_SYNC_TOKEN definida), permite. Em producao,
-    exige `?token=` igual a env `ADMIN_SYNC_TOKEN`."""
+    exige `?token=` igual a env `ADMIN_SYNC_TOKEN` - e bloqueia por padrao
+    (falha fechada) se essa variavel nao tiver sido configurada."""
     esperado = os.environ.get("ADMIN_SYNC_TOKEN")
+    em_producao = os.environ.get("FLASK_ENV", "production") == "production"
+
     if not esperado:
-        return True
+        # Sem token configurado: so permite fora de producao (dev/test).
+        # Em producao sem token configurado, bloqueia por seguranca.
+        return not em_producao
+
     recebido = request.args.get("token", "")
     if len(recebido) != len(esperado):
         return False

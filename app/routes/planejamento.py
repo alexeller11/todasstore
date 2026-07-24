@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, request, jsonif
 
 from app.models import Mes, Semana, Dia
 from app.services import planner_service, checklist_service, analytics_service
+from app.extensions import limiter
 
 bp = Blueprint("planejamento", __name__, url_prefix="/planejamento")
 
@@ -57,6 +58,7 @@ def salvar_promocao(semana_id):
 
 
 @bp.route("/semana/<int:semana_id>/gerar", methods=["POST"])
+@limiter.limit("5 per minute")
 def gerar_semana(semana_id):
     try:
         planner_service.gerar_planejamento_semana(semana_id)
@@ -73,6 +75,7 @@ def ver_dia(dia_id):
 
 
 @bp.route("/dia/<int:dia_id>/nova-ideia/<tipo>", methods=["POST"])
+@limiter.limit("15 per minute")
 def nova_ideia(dia_id, tipo):
     try:
         planner_service.gerar_nova_ideia_dia(dia_id, tipo)

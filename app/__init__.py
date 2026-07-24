@@ -2,7 +2,7 @@ import os
 from flask import Flask
 
 from config import Config
-from app.extensions import db, migrate
+from app.extensions import db, migrate, limiter
 
 
 def create_app(config_class=Config):
@@ -16,6 +16,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     from app.extensions import csrf
     csrf.init_app(app)
+    limiter.init_app(app)
 
     from app.models import models  # noqa: garante que os modelos sejam registrados
 
@@ -48,6 +49,13 @@ def create_app(config_class=Config):
     def internal_server_error(e):
         from flask import render_template
         return render_template('500.html'), 500
+
+    @app.errorhandler(429)
+    def limite_de_pedidos_excedido(e):
+        from flask import request, redirect, flash
+        flash("Muitos pedidos de geração por IA em pouco tempo. Espere um minutinho e tente de novo. 🙏", "danger")
+        destino = request.referrer or "/"
+        return redirect(destino)
 
     @app.context_processor
     def injetar_globais():

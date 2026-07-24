@@ -1,7 +1,7 @@
 import json
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 
-from app.extensions import db
+from app.extensions import db, limiter
 from app.models import Concorrente, AnaliseConcorrente, Loja
 from app.services import instagram_service
 from app.ai import ai_service, prompts
@@ -55,6 +55,7 @@ def salvar_observacoes(concorrente_id):
 
 
 @bp.route("/<int:concorrente_id>/analisar", methods=["POST"])
+@limiter.limit("5 per minute")
 def analisar(concorrente_id):
     concorrente = Concorrente.query.get_or_404(concorrente_id)
     loja = Loja.query.first()
@@ -77,7 +78,18 @@ def analisar(concorrente_id):
         )
         db.session.add(analise)
         db.session.commit()
-        flash("Análise concluída! 🔎", "success")
+
+        if dados_publicos.get("disponivel"):
+            flash("Análise concluída! 🔎", "success")
+        else:
+            flash(
+                "Análise concluída, mas o Instagram bloqueou a coleta automática dos "
+                "posts dele(a) (isso é normal e acontece com frequência). A análise "
+                "abaixo foi feita com base no perfil da sua loja e nas observações "
+                "manuais que você registrou - preencha o campo de observações para "
+                "deixar a análise ainda mais rica. 💡",
+                "info",
+            )
     except Exception as e:
         flash(f"Não consegui analisar agora: {e}", "danger")
 

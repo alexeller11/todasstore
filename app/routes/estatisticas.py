@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
 
 from app.models import Semana, InsightSemanal, Loja
-from app.extensions import db
+from app.extensions import db, limiter
 from app.services import analytics_service
 from app.ai import ai_service, prompts
 
@@ -21,6 +21,7 @@ def ver(semana_id):
 
 
 @bp.route("/semana/<int:semana_id>/gerar-insight", methods=["POST"])
+@limiter.limit("5 per minute")
 def gerar_insight(semana_id):
     semana = Semana.query.get_or_404(semana_id)
     loja = Loja.query.first()
