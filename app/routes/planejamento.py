@@ -17,7 +17,33 @@ def ver_mes(ano, numero):
 def ver_semana(semana_id):
     semana = Semana.query.get_or_404(semana_id)
     stats = analytics_service.progresso_semana(semana_id)
-    return render_template("semana.html", semana=semana, stats=stats)
+    resumo_whatsapp = _montar_resumo_semana(semana)
+    return render_template(
+        "semana.html", semana=semana, stats=stats, resumo_whatsapp=resumo_whatsapp
+    )
+
+
+def _montar_resumo_semana(semana):
+    """Monta um texto corrido com o planejamento da semana, pronto pra mandar no WhatsApp."""
+    linhas = [
+        f"📅 Planejamento da Semana {semana.numero} "
+        f"({semana.data_inicio.strftime('%d/%m')} a {semana.data_fim.strftime('%d/%m')})"
+    ]
+    if semana.promocao:
+        linhas.append(f"🎉 Promoção: {semana.promocao}")
+    linhas.append("")
+    for dia in semana.dias:
+        if not (dia.ideia_story or dia.ideia_reels or dia.ideia_feed):
+            continue
+        linhas.append(f"*{dia.dia_semana.capitalize()} ({dia.data.strftime('%d/%m')})*")
+        if dia.ideia_story:
+            linhas.append(f"• Story: {dia.ideia_story}")
+        if dia.ideia_reels:
+            linhas.append(f"• Reels: {dia.ideia_reels}")
+        if dia.ideia_feed:
+            linhas.append(f"• Feed: {dia.ideia_feed}")
+        linhas.append("")
+    return "\n".join(linhas).strip()
 
 
 @bp.route("/semana/<int:semana_id>/promocao", methods=["POST"])

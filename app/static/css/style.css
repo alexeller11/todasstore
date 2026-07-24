@@ -355,3 +355,13 @@ h1, h2, h3, h4, .titulo-app {
   body { padding-bottom: 24px; }
   .menu-inferior { display: none; }
 }
+
+/* ---------- Impressão / exportar PDF ---------- */
+@media print {
+  .menu-inferior, .topo-app a[href*="configuracoes"], .ocultar-impressao,
+  form button, .alert { display: none !important; }
+  body { background: white; padding-bottom: 0; }
+  .cartao, .card-dia { box-shadow: none; border: 1px solid #ddd; break-inside: avoid; }
+  .grade-dias { grid-template-columns: repeat(2, 1fr); }
+  a.card-dia { color: var(--texto) !important; }
+}

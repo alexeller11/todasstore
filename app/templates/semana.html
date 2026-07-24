@@ -13,10 +13,14 @@
         {{ stats.stories_feitos }} Stories · {{ stats.posts_feitos }} Posts feitos
       </div>
     </div>
-    <div class="d-flex gap-2">
-      <a href="https://wa.me/?text=Confira%20o%20planejamento%20da%20Semana%20{{ semana.numero }}!" target="_blank" class="btn-app btn-secundario" style="background:#25D366; color:white; border:none; width:auto; padding:10px 18px;">
+    <div class="d-flex gap-2 flex-wrap ocultar-impressao">
+      <button type="button" class="btn-app btn-secundario" style="background:#25D366; color:white; border:none; width:auto; padding:10px 18px;"
+              onclick="compartilharWhatsapp({{ resumo_whatsapp|tojson }})" {{ 'disabled' if not resumo_whatsapp }}>
         <i class="bi bi-whatsapp"></i> Compartilhar
-      </a>
+      </button>
+      <button type="button" class="btn-app btn-secundario" style="width:auto; padding:10px 18px;" onclick="window.print()">
+        <i class="bi bi-printer"></i> Imprimir / PDF
+      </button>
       <form method="POST" action="{{ url_for('planejamento.gerar_semana', semana_id=semana.id) }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button type="submit" class="btn-app btn-dourado">

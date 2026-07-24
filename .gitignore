@@ -4,4 +4,13 @@ __pycache__/
 .env
 venv/
 env/
+.venv/
 .pytest_cache/
+app/static/uploads/*
+!app/static/uploads/.gitkeep
+.vscode/
+.idea/
+.DS_Store
+*.egg-info/
+htmlcov/
+.coverage

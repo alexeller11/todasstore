@@ -8,6 +8,14 @@ bp = Blueprint("configuracoes", __name__, url_prefix="/configuracoes")
 import os
 from werkzeug.utils import secure_filename
 
+EXTENSOES_LOGO_PERMITIDAS = {"png", "jpg", "jpeg", "webp"}
+TAMANHO_MAXIMO_LOGO_MB = 3
+
+
+def _extensao_valida(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in EXTENSOES_LOGO_PERMITIDAS
+
+
 @bp.route("/", methods=["GET", "POST"])
 def ver():
     loja = Loja.query.first()
@@ -20,6 +28,17 @@ def ver():
         if 'logo_file' in request.files:
             file = request.files['logo_file']
             if file.filename != '':
+                if not _extensao_valida(file.filename):
+                    flash("Formato de imagem não suportado. Use PNG, JPG ou WEBP.", "danger")
+                    return redirect(url_for("configuracoes.ver"))
+
+                file.seek(0, os.SEEK_END)
+                tamanho_mb = file.tell() / (1024 * 1024)
+                file.seek(0)
+                if tamanho_mb > TAMANHO_MAXIMO_LOGO_MB:
+                    flash(f"A imagem passa do limite de {TAMANHO_MAXIMO_LOGO_MB}MB. Tente uma menor.", "danger")
+                    return redirect(url_for("configuracoes.ver"))
+
                 filename = secure_filename(file.filename)
                 upload_folder = os.path.join("app", "static", "uploads")
                 os.makedirs(upload_folder, exist_ok=True)

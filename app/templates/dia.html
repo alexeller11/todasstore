@@ -16,6 +16,10 @@
         </button>
       </form>
       {% if dia.ideia_story %}
+      <button type="button" class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);"
+              onclick="copiarTexto({{ dia.ideia_story|tojson }}, this)" title="Copiar texto">
+        <i class="bi bi-clipboard"></i>
+      </button>
       <form method="POST" action="{{ url_for('banco_ideias.salvar_do_dia', dia_id=dia.id, tipo='story') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);">
@@ -39,6 +43,10 @@
         </button>
       </form>
       {% if dia.ideia_reels %}
+      <button type="button" class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);"
+              onclick="copiarTexto({{ dia.ideia_reels|tojson }}, this)" title="Copiar texto">
+        <i class="bi bi-clipboard"></i>
+      </button>
       <form method="POST" action="{{ url_for('banco_ideias.salvar_do_dia', dia_id=dia.id, tipo='reels') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);">
@@ -62,6 +70,10 @@
         </button>
       </form>
       {% if dia.ideia_feed %}
+      <button type="button" class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);"
+              onclick="copiarTexto({{ dia.ideia_feed|tojson }}, this)" title="Copiar texto">
+        <i class="bi bi-clipboard"></i>
+      </button>
       <form method="POST" action="{{ url_for('banco_ideias.salvar_do_dia', dia_id=dia.id, tipo='feed') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button class="btn btn-sm rounded-pill" style="background:#fff; color: var(--ameixa); border:1px solid var(--rosa-suave);">
@@ -77,9 +89,12 @@
 <div class="cartao">
   <h5><i class="bi bi-chat-heart-fill"></i> Legenda pronta</h5>
   {% if dia.legenda %}
-  <div class="d-flex justify-content-end mb-1">
-    <button class="btn btn-sm rounded-pill" onclick="navigator.clipboard.writeText(`{{ dia.legenda|replace('\n', '\\n')|replace('\"', '\\\"')|replace('`', '\\`') }}`); this.innerHTML='<i class=\'bi bi-check2\'></i> Copiado!'; setTimeout(()=>this.innerHTML='<i class=\'bi bi-copy\'></i> Copiar', 2000)" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
+  <div class="d-flex justify-content-end gap-1 mb-1">
+    <button type="button" class="btn btn-sm rounded-pill" onclick="copiarTexto({{ dia.legenda|tojson }}, this)" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
       <i class="bi bi-copy"></i> Copiar
+    </button>
+    <button type="button" class="btn btn-sm rounded-pill" onclick="compartilharWhatsapp({{ dia.legenda|tojson }})" style="background:#DFF5E8; color:#2E7D4F; border:none;" title="Enviar por WhatsApp">
+      <i class="bi bi-whatsapp"></i>
     </button>
   </div>
   {% endif %}
