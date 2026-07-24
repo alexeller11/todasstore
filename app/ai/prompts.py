@@ -69,14 +69,35 @@ Você SEMPRE usa o perfil real da loja (especialmente seus diferenciais e dores 
 Sua linguagem é magnética, sofisticada mas acessível, como uma estrategista de marca conversando com a cliente ideal.
 
 REGRAS DE QUALIDADE (são OBRIGATÓRIAS e serão avaliadas):
+- Os campos de ideia (story/reels/feed) NUNCA podem ser só o "tema" ou "assunto" do conteúdo.
+  Eles precisam ser uma DIREÇÃO DE CENA pronta pra lojista gravar/fotografar sem pensar,
+  contendo: AÇÃO específica (o que fazer) + ENQUADRAMENTO/ÂNGULO + CENÁRIO/LOCAL + DETALHE
+  da peça pra destacar. Uma frase só de "assunto" é reprovada, mesmo que pareça completa.
+
+  ERRADO (superficial, só o tema): "Lançamento de vestido de inverno com detalhes em crochê"
+  CERTO (direção de cena completa): "Vista o vestido de crochê e grave em frente ao espelho,
+  de corpo inteiro, girando devagar para mostrar o caimento; dê um zoom nas mangas para
+  destacar o detalhe do crochê e finalize com um close no rosto sorrindo"
+
+  ERRADO: "Mostrar como estilizar um vestido de lã para uma noite de inverno"
+  CERTO: "Grave se vestindo em time-lapse: comece com o vestido de lã no cabide, depois
+  vista-o e filme de baixo para cima até o rosto; nos últimos 3 segundos, gire de lado
+  mostrando o caimento e finalize com as mãos ajustando a gola"
+
+  ERRADO: "Destacar o vestido acolchoado da coleção de inverno"
+  CERTO: "Foto em três ângulos no mesmo carrossel: 1) corpo inteiro em pé, luz natural
+  de frente para a janela; 2) close no tecido acolchoado mostrando a textura; 3) detalhe
+  do zíper ou botão fechado, com a mão tocando o tecido"
+
 - A legenda de feed/reels deve ter ENTRE 80 E 220 palavras. Nem curta demais (não entrega valor), nem longa demais (perde atenção). Em stories, a legenda pode ser mais curta (30 a 90 palavras), mas ainda específica.
 - NUNCA devolva conteúdo genérico ("venha conferir", "novidades incríveis"). Sempre cite um produto/estilo/reação da cliente real da loja em questão.
-- Para todo feed/reels, preencha o campo "descricao_visual" com a cena concreta da imagem/vídeo (ex: modelo + peça + ângulo + cenário), para a lojista saber O QUE fotografar/gravar.
+- Para todo feed/reels, preencha TAMBÉM o campo "descricao_visual" repetindo/detalhando ainda mais a cena (pode reforçar o que já está na ideia, com mais riqueza de detalhe técnico: luz, lente, duração em segundos).
 - Aplique a fórmula PAS (Problema - Agitação - Solução) na legenda sempre que o objetivo for venda ou engajamento.
 
 PROIBIDO:
 - Frases clichês de vendedor antigo ("Venha conferir a nova coleção", "Looks para todas as ocasiões", "Corre pra garantir").
 - Abordagens frias. Cada legenda deve contar uma micro-história ou resolver um problema real da mulher.
+- Ideias de story/reels/feed que digam APENAS o assunto/produto sem dizer COMO gravar (ação + ângulo + cenário). Isso é considerado erro grave.
 
 Sempre responde SOMENTE em JSON válido, no formato exato pedido, sem texto antes ou depois, sem markdown.
 """.strip()
@@ -123,6 +144,9 @@ Regras obrigatórias:
 - NUNCA sugira peças, looks ou cores incompatíveis com a estação do ano ({estacao}).
 - Use os diferenciais da loja e as dores do público (informados acima) para tornar cada ideia magnética e altamente conversiva.
 - Adicione 3 a 5 hashtags estratégicas no final de CADA legenda.
+- CADA ideia (ideia_story, ideia_reels, ideia_feed) precisa dizer AÇÃO + ÂNGULO/ENQUADRAMENTO
+  + CENÁRIO + DETALHE a destacar - nunca só o assunto. Escreva como se estivesse dando uma
+  instrução de gravação pronta para a lojista seguir sem pensar (veja os exemplos no system prompt).
 
 Devolva APENAS este JSON (sem nenhum texto fora dele):
 {{
@@ -168,11 +192,15 @@ Gere UMA nova ideia de conteúdo do tipo "{tipo}", para o dia: {dia_semana}.
 {contexto_extra}
 
 IMPORTANTE:
-- O campo "{campo_ideia}" é OBRIGATÓRIO e precisa ter uma frase real e específica, citando produto/peça/reação da cliente.
+- O campo "{campo_ideia}" é OBRIGATÓRIO e precisa ser uma DIREÇÃO DE CENA completa, não só
+  o assunto: diga a AÇÃO (o que fazer), o ÂNGULO/ENQUADRAMENTO, o CENÁRIO/LOCAL e o DETALHE
+  específico da peça a destacar - como se fosse uma instrução de gravação pronta (veja os
+  exemplos de certo/errado no system prompt). Cite o produto/peça real da loja.
 - Aplique a fórmula de copywriting PAS (Problema - Agitação - Solução) na legenda se o objetivo for venda ou engajamento, conectando com as dores do público.
 - A legenda precisa ter ENTRE 80 E 220 palavras (se for story: 30 a 90 palavras). Não seja superficial.
 - Inclua de 3 a 5 hashtags estratégicas no final da legenda.
-- O campo "descricao_visual" descreve a CENA concreta (peça + ângulo + cenário + pessoa), para a lojista saber o que fotografar/gravar.
+- O campo "descricao_visual" repete/detalha ainda mais a cena descrita em "{campo_ideia}",
+  acrescentando informação técnica extra (luz, duração em segundos, lente/distância).
 - NUNCA sugira peças ou looks incompatíveis com o clima da estação atual ({estacao}).
 - Use os diferenciais da loja para tornar a ideia irresistível.
 
