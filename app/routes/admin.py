@@ -18,12 +18,13 @@ por padrao (falha fechada), em vez de ficar aberta para qualquer pessoa.
 """
 import os
 
-from flask import Blueprint, current_app, request, jsonify
+from flask import Blueprint, current_app, request, jsonify, render_template_string
 from sqlalchemy import text, inspect
 
-from app.extensions import db
+from app.extensions import db, csrf
 
 bp = Blueprint("admin", __name__, url_prefix="/admin")
+csrf.exempt(bp)
 
 
 def _autenticado():
@@ -136,6 +137,103 @@ def sync_schema():
 
         return jsonify({
             "ok": True,
+            "relatorio": [{"item": r[0], "status": r[1]} for r in relatorio],
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"ok": False, "erro": str(e)}), 500
+
+
+_TABELAS_EM_ORDEM_DE_EXCLUSAO = [
+    "checklist_item",
+    "versao_conteudo",
+    "insight_semanal",
+    "dia",
+    "semana",
+    "mes",
+    "analise_concorrente",
+    "concorrente",
+    "ideia",
+    "loja",
+]
+
+_PAGINA_CONFIRMACAO = """
+<!doctype html>
+<html lang="pt-br"><head><meta charset="utf-8">
+<title>Resetar dados - Todas Store</title>
+<style>
+  body { font-family: sans-serif; background:#FFF6F0; display:flex; align-items:center;
+         justify-content:center; height:100vh; margin:0; }
+  .caixa { background:white; padding:32px; border-radius:16px; max-width:420px;
+           box-shadow:0 4px 16px rgba(0,0,0,.08); text-align:center; }
+  h2 { color:#6B2C4C; }
+  ul { text-align:left; color:#555; }
+  button { background:#B23A48; color:white; border:none; padding:12px 24px;
+           border-radius:24px; font-weight:bold; cursor:pointer; font-size:1rem; }
+  button:hover { opacity:.9; }
+</style></head>
+<body>
+  <div class="caixa">
+    <h2>⚠️ Resetar TODOS os dados?</h2>
+    <p>Isso vai apagar permanentemente, para sempre:</p>
+    <ul>
+      <li>Perfil da loja (a lojista fará o onboarding do zero)</li>
+      <li>Todo o planejamento (meses, semanas, dias, checklist)</li>
+      <li>Banco de ideias</li>
+      <li>Concorrentes e análises</li>
+    </ul>
+    <p><strong>Não tem como desfazer.</strong> Use antes de entregar o app para um cliente novo.</p>
+    <form method="POST">
+      <input type="hidden" name="token" value="{{ token }}">
+      <input type="hidden" name="confirmar" value="RESETAR">
+      <button type="submit">Sim, apagar tudo e começar do zero</button>
+    </form>
+  </div>
+</body></html>
+"""
+
+
+@bp.route("/reset-dados", methods=["GET", "POST"])
+def reset_dados():
+    """Apaga todos os dados (loja, planejamento, banco de ideias, concorrentes),
+    preservando o esquema do banco intacto - para entregar o app "zerado" a um
+    novo cliente. GET mostra uma tela de confirmacao; a exclusao real só
+    acontece no POST com `confirmar=RESETAR`, para nao rodar sozinha se o link
+    (com o token) for aberto sem querer por alguem ou por um preview de link."""
+    if not _autenticado():
+        return jsonify({"ok": False, "erro": "token ausente ou invalido"}), 403
+
+    if request.method == "GET":
+        token = request.args.get("token", "")
+        return render_template_string(_PAGINA_CONFIRMACAO, token=token)
+
+    if request.form.get("confirmar") != "RESETAR":
+        return jsonify({"ok": False, "erro": "confirmacao ausente"}), 400
+
+    relatorio = []
+    try:
+        inspector = inspect(db.engine)
+        tabelas_existentes = set(inspector.get_table_names())
+
+        for tabela in _TABELAS_EM_ORDEM_DE_EXCLUSAO:
+            if tabela not in tabelas_existentes:
+                relatorio.append((tabela, "tabela nao existe - pulado"))
+                continue
+            try:
+                resultado = db.session.execute(text(f"DELETE FROM {tabela}"))
+                db.session.commit()
+                relatorio.append((tabela, f"{resultado.rowcount} registro(s) apagado(s)"))
+            except Exception as e:
+                db.session.rollback()
+                relatorio.append((tabela, f"ERRO: {e}"))
+
+        db.session.remove()
+        db.engine.dispose()
+        relatorio.append(("engine", "disposed - pool de conexoes reiniciado"))
+
+        return jsonify({
+            "ok": True,
+            "mensagem": "Dados resetados. Acesse o app normalmente - ele vai pedir o onboarding do zero.",
             "relatorio": [{"item": r[0], "status": r[1]} for r in relatorio],
         })
     except Exception as e:
