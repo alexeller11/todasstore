@@ -61,7 +61,7 @@
   <span class="badge-app mb-2 text-capitalize">{{ ideia.tipo }}</span>
   <p class="mb-1">{{ ideia.conteudo }}</p>
   {% if ideia.tags %}<p class="texto-suave" style="font-size:.8rem;">{{ ideia.tags }}</p>{% endif %}
-  <form method="POST" action="{{ url_for('banco_ideias.excluir', ideia_id=ideia.id) }}">
+  <form method="POST" action="{{ url_for('banco_ideias.excluir', ideia_id=ideia.id) }}" onsubmit="return confirm('Excluir esta ideia? Essa ação não pode ser desfeita.')">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <button class="btn btn-sm text-danger border-0"><i class="bi bi-trash"></i> Excluir</button>
   </form>

@@ -69,6 +69,33 @@ function compartilharWhatsapp(texto) {
   window.open(url, "_blank", "noopener");
 }
 
+// Dá feedback visual (spinner + texto) em qualquer formulário que chama a IA,
+// pra lojista saber que o pedido foi enviado e não clicar de novo enquanto
+// espera (a Groq pode levar alguns segundos pra responder). Basta marcar o
+// <form> com class="form-ia"; o texto do botão durante o carregamento pode
+// ser customizado com data-loading-text="Gerando ideia..." no botão.
+document.addEventListener("submit", (evento) => {
+  const form = evento.target;
+  if (!form.classList || !form.classList.contains("form-ia")) return;
+
+  const botao = form.querySelector('button[type="submit"], button:not([type])');
+  if (!botao || botao.disabled) return;
+
+  const textoCarregando = botao.dataset.loadingText || "Gerando com a IA...";
+  botao.dataset.textoOriginal = botao.innerHTML;
+  botao.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${textoCarregando}`;
+  botao.disabled = true;
+  botao.setAttribute("aria-busy", "true");
+  // trava visual: se por algum motivo a navegação não acontecer (ex: erro de
+  // rede), destrava depois de 25s pra não deixar o botão preso pra sempre
+  setTimeout(() => {
+    if (botao.dataset.textoOriginal) {
+      botao.innerHTML = botao.dataset.textoOriginal;
+      botao.disabled = false;
+    }
+  }, 25000);
+});
+
 // Registro do Service Worker (funcionalidade PWA / offline básico)
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {

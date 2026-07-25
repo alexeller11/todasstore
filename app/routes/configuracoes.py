@@ -70,3 +70,8 @@ def ver():
         return redirect(url_for("configuracoes.ver"))
 
     return render_template("configuracoes.html", loja=loja)
+
+
+@bp.route("/ajuda")
+def ajuda():
+    return render_template("ajuda.html")

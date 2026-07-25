@@ -4,7 +4,7 @@
 {% block conteudo %}
 <h2 class="mb-3">@{{ concorrente.instagram }}</h2>
 
-<form method="POST" action="{{ url_for('concorrentes.analisar', concorrente_id=concorrente.id) }}">
+<form method="POST" action="{{ url_for('concorrentes.analisar', concorrente_id=concorrente.id) }}" class="form-ia">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <button class="btn-app btn-dourado mb-3"><i class="bi bi-search-heart"></i> Analisar este concorrente</button>
 </form>
@@ -29,7 +29,7 @@
   </form>
 </div>
 
-<form method="POST" action="{{ url_for('concorrentes.remover', concorrente_id=concorrente.id) }}">
+<form method="POST" action="{{ url_for('concorrentes.remover', concorrente_id=concorrente.id) }}" onsubmit="return confirm('Remover este concorrente e todas as análises feitas dele? Essa ação não pode ser desfeita.')">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
   <button class="btn btn-sm text-danger border-0"><i class="bi bi-trash"></i> Remover concorrente</button>
 </form>

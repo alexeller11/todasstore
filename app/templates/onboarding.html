@@ -2,93 +2,183 @@
 {% block titulo %}Vamos começar{% endblock %}
 
 {% block conteudo %}
-<div class="cartao-destaque text-center mb-4">
+<div class="cartao-destaque text-center mb-3">
   <h2><i class="bi bi-stars"></i> Bem-vinda!</h2>
   <p class="mb-0">Vamos conhecer sua loja em menos de 2 minutinhos, pra eu poder te ajudar de verdade. 💖</p>
 </div>
 
-<form method="POST" class="cartao">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-  <div class="mb-3">
-    <label class="form-label fw-bold">Nome da sua loja</label>
-    <input type="text" name="nome" class="form-control form-control-lg rounded-3" required
-           placeholder="Ex: Todas Store" value="{{ loja.nome if loja else '' }}">
+<div class="mb-3">
+  <div class="d-flex justify-content-between texto-suave mb-1" style="font-size:.8rem;">
+    <span id="rotulo-passo">Passo 1 de 4 · Sobre a loja</span>
+    <span id="rotulo-percentual">25%</span>
   </div>
-
-  <div class="mb-3">
-    <label class="form-label fw-bold">Cidade</label>
-    <input type="text" name="cidade" class="form-control rounded-3" placeholder="Ex: Linhares - ES"
-           value="{{ loja.cidade if loja else '' }}">
+  <div class="progresso-container" style="height:8px;">
+    <div class="progresso-barra" id="barra-progresso" style="width:25%; height:8px; transition: width .25s ease;"></div>
   </div>
+</div>
 
-  <div class="mb-3">
-    <label class="form-label fw-bold">Instagram da loja</label>
-    <input type="text" name="instagram" class="form-control rounded-3" placeholder="@todasstore_"
-           value="{{ loja.instagram if loja else '' }}">
-  </div>
+<form method="POST" class="cartao" id="form-onboarding" novalidate>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
 
-  <div class="mb-3">
-    <label class="form-label fw-bold">Como é o estilo da sua loja?</label>
-    <input type="text" name="estilo" class="form-control rounded-3"
-           placeholder="Ex: casual e despojado, festa, plus size..." value="{{ loja.estilo if loja else '' }}">
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label fw-bold">Quem é sua cliente ideal?</label>
-    <input type="text" name="publico" class="form-control rounded-3"
-           placeholder="Ex: mulheres de 20 a 35 anos" value="{{ loja.publico if loja else '' }}">
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label fw-bold">Faixa de preço dos produtos</label>
-    <input type="text" name="faixa_preco" class="form-control rounded-3"
-           placeholder="Ex: R$ 79 a R$ 250" value="{{ loja.faixa_preco if loja else '' }}">
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label fw-bold">O que você vende?</label>
-    <textarea name="produtos" class="form-control rounded-3" rows="2"
-              placeholder="Ex: vestidos, blusas, conjuntos...">{{ loja.produtos if loja else '' }}</textarea>
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label fw-bold">Como você quer falar com suas clientes?</label>
-    <input type="text" name="tom_de_voz" class="form-control rounded-3"
-           placeholder="Ex: descontraída, elegante, engraçada..." value="{{ loja.tom_de_voz if loja else '' }}">
-  </div>
-
-  <div class="mb-4">
-    <label class="form-label fw-bold">Qual seu maior objetivo agora?</label>
-    <input type="text" name="objetivos" class="form-control rounded-3"
-           placeholder="Ex: vender mais, crescer nos seguidores..." value="{{ loja.objetivos if loja else '' }}">
-  </div>
-
-  <div class="mb-3">
-    <label class="form-label fw-bold">
-      O que torna sua loja única?
-      <span class="texto-suave fw-normal" style="font-size:.8rem;">(opcional, MAS faz toda a diferença na IA 💖)</span>
-    </label>
-    <textarea name="diferenciais" class="form-control rounded-3" rows="2"
-              placeholder="Ex: curadoria afetiva, peças exclusivas, atendimento personalizado no WhatsApp...">{{ loja.diferenciais if loja else '' }}</textarea>
-    <div class="texto-suave mt-1" style="font-size:.78rem;">
-      Quanto mais específica você for aqui, menos genérica fica a legenda que a IA cria pra você.
+  <!-- Passo 1: Identidade da loja -->
+  <div class="passo-onboarding" data-passo="1">
+    <div class="mb-3">
+      <label class="form-label fw-bold">Nome da sua loja</label>
+      <input type="text" name="nome" class="form-control form-control-lg rounded-3" required
+             placeholder="Ex: Todas Store" value="{{ loja.nome if loja else '' }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">Cidade</label>
+      <input type="text" name="cidade" class="form-control rounded-3" placeholder="Ex: Linhares - ES"
+             value="{{ loja.cidade if loja else '' }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">Instagram da loja</label>
+      <input type="text" name="instagram" class="form-control rounded-3" placeholder="@todasstore_"
+             value="{{ loja.instagram if loja else '' }}">
     </div>
   </div>
 
-  <div class="mb-4">
-    <label class="form-label fw-bold">
-      O que sua cliente mais sofre / precisa resolver?
-      <span class="texto-suave fw-normal" style="font-size:.8rem;">(opcional, MAS faz toda a diferença na IA 💖)</span>
-    </label>
-    <textarea name="dores_do_publico" class="form-control rounded-3" rows="2"
-              placeholder="Ex: não tem o que vestir pro trabalho, não sabe combinar peças, roupas que não valorizam...">{{ loja.dores_do_publico if loja else '' }}</textarea>
-    <div class="texto-suave mt-1" style="font-size:.78rem;">
-      A IA usa EXATAMENTE essas dores pras suas legendas (fórmula PAS) - sem isso, fica genérico.
+  <!-- Passo 2: Produto e público -->
+  <div class="passo-onboarding d-none" data-passo="2">
+    <div class="mb-3">
+      <label class="form-label fw-bold">Como é o estilo da sua loja?</label>
+      <input type="text" name="estilo" class="form-control rounded-3"
+             placeholder="Ex: casual e despojado, festa, plus size..." value="{{ loja.estilo if loja else '' }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">Quem é sua cliente ideal?</label>
+      <input type="text" name="publico" class="form-control rounded-3"
+             placeholder="Ex: mulheres de 20 a 35 anos" value="{{ loja.publico if loja else '' }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">Faixa de preço dos produtos</label>
+      <input type="text" name="faixa_preco" class="form-control rounded-3"
+             placeholder="Ex: R$ 79 a R$ 250" value="{{ loja.faixa_preco if loja else '' }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">O que você vende?</label>
+      <textarea name="produtos" class="form-control rounded-3" rows="2"
+                placeholder="Ex: vestidos, blusas, conjuntos...">{{ loja.produtos if loja else '' }}</textarea>
     </div>
   </div>
 
-  <button type="submit" class="btn-app btn-primario">
-    <i class="bi bi-check2-circle"></i> Tudo pronto, vamos lá!
-  </button>
+  <!-- Passo 3: Voz e objetivo -->
+  <div class="passo-onboarding d-none" data-passo="3">
+    <div class="mb-3">
+      <label class="form-label fw-bold">Como você quer falar com suas clientes?</label>
+      <input type="text" name="tom_de_voz" class="form-control rounded-3"
+             placeholder="Ex: descontraída, elegante, engraçada..." value="{{ loja.tom_de_voz if loja else '' }}">
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">Qual seu maior objetivo agora?</label>
+      <input type="text" name="objetivos" class="form-control rounded-3"
+             placeholder="Ex: vender mais, crescer nos seguidores..." value="{{ loja.objetivos if loja else '' }}">
+    </div>
+  </div>
+
+  <!-- Passo 4: Diferenciais (o que mais melhora a qualidade da IA) -->
+  <div class="passo-onboarding d-none" data-passo="4">
+    <div class="cartao-destaque mb-3" style="padding:12px 16px;">
+      <span style="font-size:.85rem;"><i class="bi bi-lightbulb"></i> Esse último passo é opcional, mas é o que MAIS
+      melhora a qualidade do que a IA cria pra você. Vale o minutinho a mais! 💖</span>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">O que torna sua loja única?</label>
+      <textarea name="diferenciais" class="form-control rounded-3" rows="2"
+                placeholder="Ex: curadoria afetiva, peças exclusivas, atendimento personalizado no WhatsApp...">{{ loja.diferenciais if loja else '' }}</textarea>
+      <div class="texto-suave mt-1" style="font-size:.78rem;">
+        Quanto mais específica você for aqui, menos genérica fica a legenda que a IA cria pra você.
+      </div>
+    </div>
+    <div class="mb-3">
+      <label class="form-label fw-bold">O que sua cliente mais sofre / precisa resolver?</label>
+      <textarea name="dores_do_publico" class="form-control rounded-3" rows="2"
+                placeholder="Ex: não tem o que vestir pro trabalho, não sabe combinar peças, roupas que não valorizam...">{{ loja.dores_do_publico if loja else '' }}</textarea>
+      <div class="texto-suave mt-1" style="font-size:.78rem;">
+        A IA usa EXATAMENTE essas dores pras suas legendas (fórmula PAS) - sem isso, fica genérico.
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between gap-2 mt-3">
+    <button type="button" id="btn-voltar" class="btn-app btn-secundario d-none" style="width:auto; padding:12px 22px;">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </button>
+    <button type="button" id="btn-proximo" class="btn-app btn-primario ms-auto" style="width:auto; padding:12px 26px;">
+      Próximo <i class="bi bi-arrow-right"></i>
+    </button>
+    <button type="submit" id="btn-finalizar" class="btn-app btn-primario d-none ms-auto" style="width:auto; padding:12px 26px;">
+      <i class="bi bi-check2-circle"></i> Tudo pronto, vamos lá!
+    </button>
+  </div>
 </form>
+{% endblock %}
+
+{% block script_extra %}
+<script>
+(function () {
+  const TOTAL_PASSOS = 4;
+  const ROTULOS = ["", "Sobre a loja", "Produto & público", "Voz & objetivo", "Diferenciais"];
+  let passoAtual = 1;
+
+  const passos = document.querySelectorAll(".passo-onboarding");
+  const btnVoltar = document.getElementById("btn-voltar");
+  const btnProximo = document.getElementById("btn-proximo");
+  const btnFinalizar = document.getElementById("btn-finalizar");
+  const barra = document.getElementById("barra-progresso");
+  const rotuloPasso = document.getElementById("rotulo-passo");
+  const rotuloPercentual = document.getElementById("rotulo-percentual");
+
+  function mostrarPasso(numero) {
+    passos.forEach((p) => p.classList.toggle("d-none", Number(p.dataset.passo) !== numero));
+    btnVoltar.classList.toggle("d-none", numero === 1);
+    btnProximo.classList.toggle("d-none", numero === TOTAL_PASSOS);
+    btnFinalizar.classList.toggle("d-none", numero !== TOTAL_PASSOS);
+
+    const percentual = Math.round((numero / TOTAL_PASSOS) * 100);
+    barra.style.width = percentual + "%";
+    rotuloPercentual.textContent = percentual + "%";
+    rotuloPasso.textContent = `Passo ${numero} de ${TOTAL_PASSOS} · ${ROTULOS[numero]}`;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function passoValido(numero) {
+    const passo = document.querySelector(`.passo-onboarding[data-passo="${numero}"]`);
+    const camposObrigatorios = passo.querySelectorAll("[required]");
+    for (const campo of camposObrigatorios) {
+      if (!campo.value.trim()) {
+        campo.focus();
+        campo.classList.add("is-invalid");
+        return false;
+      }
+      campo.classList.remove("is-invalid");
+    }
+    return true;
+  }
+
+  btnProximo.addEventListener("click", () => {
+    if (!passoValido(passoAtual)) return;
+    if (passoAtual < TOTAL_PASSOS) {
+      passoAtual += 1;
+      mostrarPasso(passoAtual);
+    }
+  });
+
+  btnVoltar.addEventListener("click", () => {
+    if (passoAtual > 1) {
+      passoAtual -= 1;
+      mostrarPasso(passoAtual);
+    }
+  });
+
+  document.getElementById("form-onboarding").addEventListener("submit", (evento) => {
+    if (!passoValido(TOTAL_PASSOS)) {
+      evento.preventDefault();
+    }
+  });
+
+  mostrarPasso(1);
+})();
+</script>
 {% endblock %}

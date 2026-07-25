@@ -59,9 +59,10 @@ def create_app(config_class=Config):
 
     @app.context_processor
     def injetar_globais():
+        from datetime import date
         from app.models import Loja
         loja_atual = Loja.query.first()
-        return {"loja_atual": loja_atual}
+        return {"loja_atual": loja_atual, "hoje": date.today()}
 
     with app.app_context():
         # Em producao (DATABASE_URL = PostgreSQL do Render), o esquema e

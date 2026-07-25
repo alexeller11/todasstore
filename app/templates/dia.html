@@ -7,9 +7,9 @@
 
 <div class="cartao">
   <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-    <h5><i class="bi bi-camera-reels-fill"></i> Ideia de Story</h5>
+    <h5><i class="bi bi-camera-reels-fill"></i> Ideia de Story <i class="bi bi-question-circle texto-suave" style="font-size:.75rem; cursor:help;" title="Story: aquele vídeo/foto que fica só 24h no ar, no topo do Instagram. Ótimo pra bastidores e coisas rápidas."></i></h5>
     <div class="d-flex gap-1">
-      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='story') }}">
+      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='story') }}" class="form-ia">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
           <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
@@ -34,9 +34,9 @@
 
 <div class="cartao">
   <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-    <h5><i class="bi bi-film"></i> Ideia de Reels</h5>
+    <h5><i class="bi bi-film"></i> Ideia de Reels <i class="bi bi-question-circle texto-suave" style="font-size:.75rem; cursor:help;" title="Reels: vídeo curto (até ~90s) que fica salvo no perfil e tem mais chance de viralizar, alcançando gente que ainda não te segue."></i></h5>
     <div class="d-flex gap-1">
-      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='reels') }}">
+      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='reels') }}" class="form-ia">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
           <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
@@ -61,9 +61,9 @@
 
 <div class="cartao">
   <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-    <h5><i class="bi bi-grid-3x3-gap-fill"></i> Ideia de Feed</h5>
+    <h5><i class="bi bi-grid-3x3-gap-fill"></i> Ideia de Feed <i class="bi bi-question-circle texto-suave" style="font-size:.75rem; cursor:help;" title="Feed: a foto ou carrossel que fica salvo permanentemente na grade do seu perfil."></i></h5>
     <div class="d-flex gap-1">
-      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='feed') }}">
+      <form method="POST" action="{{ url_for('planejamento.nova_ideia', dia_id=dia.id, tipo='feed') }}" class="form-ia">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
         <button class="btn btn-sm rounded-pill" style="background: var(--rosa-suave); color: var(--ameixa); border:none;">
           <i class="bi bi-arrow-repeat"></i> Gerar nova ideia
@@ -104,7 +104,7 @@
     <i class="bi bi-image"></i> <strong>Inspiração visual:</strong> {{ dia.descricao_visual }}
   </p>
   {% endif %}
-  {% if dia.cta %}<span class="badge-app"><i class="bi bi-megaphone"></i> {{ dia.cta }}</span>{% endif %}
+  {% if dia.cta %}<span class="badge-app" title="CTA = Call To Action, a 'chamada pra ação' que convida a cliente a fazer algo (comentar, chamar no WhatsApp, comprar)."><i class="bi bi-megaphone"></i> {{ dia.cta }}</span>{% endif %}
   {% if dia.tempo_estimado %}<span class="badge-app ms-1"><i class="bi bi-clock"></i> {{ dia.tempo_estimado }}</span>{% endif %}
 </div>
 

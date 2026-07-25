@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block titulo %}Como funciona{% endblock %}
+
+{% block conteudo %}
+<h2 class="mb-1"><i class="bi bi-question-circle-fill"></i> Como funciona</h2>
+<p class="texto-suave mb-3">Um resumão rápido pra tirar qualquer dúvida sobre os termos e as telas do app.</p>
+
+<div class="cartao">
+  <h5><i class="bi bi-camera-reels-fill"></i> Story, Reels e Feed - qual a diferença?</h5>
+  <p class="mb-1"><strong>Story:</strong> foto ou vídeo que fica no ar só por 24 horas, no topo do Instagram. Ótimo pra coisas rápidas, bastidores, promoções relâmpago.</p>
+  <p class="mb-1"><strong>Reels:</strong> vídeo curto (até ~90 segundos) que fica salvo no seu perfil pra sempre. É o formato com mais chance de alcançar gente nova, que ainda não te segue.</p>
+  <p class="mb-0"><strong>Feed:</strong> a foto (ou carrossel de fotos) que fica salva permanentemente na grade do seu perfil.</p>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-magic"></i> Como a IA gera o conteúdo?</h5>
+  <p class="mb-0">
+    Quando você clica em "Gerar Planejamento", a IA usa as informações que você preencheu
+    no onboarding (estilo da loja, público, diferenciais, dores da cliente) pra criar ideias
+    de Story/Reels/Feed pros 7 dias da semana. Quanto mais completo o seu perfil em
+    <a href="{{ url_for('configuracoes.ver') }}">Ajustes</a>, melhor e menos genérico fica o
+    conteúdo gerado. Você sempre pode clicar em "Gerar nova ideia" se não gostar do resultado.
+  </p>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-megaphone"></i> O que é CTA?</h5>
+  <p class="mb-0">
+    CTA significa "Call To Action" (chamada pra ação) - é a parte da legenda que convida
+    a cliente a fazer alguma coisa: comentar, chamar no WhatsApp, clicar no link da bio,
+    ir até a loja. Toda legenda boa termina com um CTA claro.
+  </p>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-check2-square"></i> O que é o checklist e o que significa "dia completo"?</h5>
+  <p class="mb-0">
+    Cada dia tem uma lista de pequenas tarefas (ex: "gravar o story", "publicar o post").
+    Um dia fica marcado como <strong>completo</strong> nas estatísticas e no calendário quando
+    TODOS os itens do checklist daquele dia estão marcados como feitos.
+  </p>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-binoculars-fill"></i> Por que a análise de concorrente às vezes não traz dados do Instagram?</h5>
+  <p class="mb-0">
+    O Instagram bloqueia a coleta automática de posts com bastante frequência - isso é
+    normal e não é um defeito do app. Quando isso acontece, a análise é feita com base no
+    perfil da sua loja e nas observações manuais que você anotar sobre o concorrente -
+    por isso vale a pena preencher esse campo.
+  </p>
+</div>
+
+<div class="cartao">
+  <h5><i class="bi bi-arrow-repeat"></i> Posso mudar as informações da minha loja depois?</h5>
+  <p class="mb-0">
+    Sim! Vá em <a href="{{ url_for('configuracoes.ver') }}">Ajustes</a> a qualquer momento
+    pra atualizar nome, estilo, público, diferenciais etc. As próximas gerações de conteúdo
+    já vão usar as informações atualizadas.
+  </p>
+</div>
+
+<div class="text-center mt-3 mb-2">
+  <a href="{{ url_for('dashboard.inicio') }}" class="texto-suave" style="font-size:.85rem;">
+    <i class="bi bi-arrow-left"></i> Voltar para o início
+  </a>
+</div>
+{% endblock %}

@@ -80,6 +80,7 @@
 
   <nav class="menu-inferior">
     <a href="{{ url_for('dashboard.inicio') }}"><i class="bi bi-house-heart-fill"></i>Início</a>
+    <a href="{{ url_for('planejamento.ver_mes', ano=hoje.year, numero=hoje.month) }}"><i class="bi bi-calendar3"></i>Planejamento</a>
     <a href="{{ url_for('banco_ideias.listar') }}"><i class="bi bi-lightbulb-fill"></i>Ideias</a>
     <a href="{{ url_for('concorrentes.listar') }}"><i class="bi bi-binoculars-fill"></i>Concorrentes</a>
     <a href="{{ url_for('configuracoes.ver') }}"><i class="bi bi-gear-fill"></i>Ajustes</a>

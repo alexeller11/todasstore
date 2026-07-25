@@ -46,6 +46,25 @@
   <div class="cta-hoje-seta"><i class="bi bi-arrow-right-circle-fill"></i></div>
 </a>
 
+<!-- Sugestão ativa: semana ainda sem nada gerado -->
+{% if semana_sem_conteudo %}
+<div class="cartao-destaque">
+  <div class="d-flex align-items-center gap-3">
+    <div style="font-size:2rem;">✨</div>
+    <div class="flex-grow-1">
+      <h4 class="mb-1">Essa semana ainda está em branco</h4>
+      <p class="mb-2 opacity-75" style="font-size:.88rem;">Que tal deixar a IA criar um ponto de partida pra você? Depois é só ajustar o que quiser.</p>
+      <form method="POST" action="{{ url_for('planejamento.gerar_semana', semana_id=semana_atual.id) }}" class="form-ia">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="btn-app btn-dourado" style="width:auto; padding:10px 20px;" data-loading-text="Criando os 7 dias, só um instante...">
+          <i class="bi bi-magic"></i> Gerar planejamento da semana
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <!-- Faixa da semana atual -->
 {% if semana_atual %}
 <div class="cartao">
