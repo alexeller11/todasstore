@@ -64,22 +64,21 @@ def create_app(config_class=Config):
         loja_atual = Loja.query.first()
         return {"loja_atual": loja_atual, "hoje": date.today()}
 
-        with app.app_context():
-            uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
-            is_producao = uri.startswith("postgresql")
-            if not is_producao:
-                # Development (SQLite) – cria as tabelas se ainda não existirem
+    # Initialize DB – create tables for SQLite, rely on migrations for production
+    with app.app_context():
+        uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
+        if uri.startswith("sqlite"):
+            try:
+                db.create_all()
+            except Exception as e:
+                app.logger.warning(f"db.create_all() failed: {e}")
                 try:
-                    db.create_all()
-                except Exception as e:
-                    app.logger.warning(f"db.create_all() falhou: {e}")
-                    try:
-                        db.session.rollback()
-                    except Exception:
-                        pass
-                    db.engine.dispose()
-            else:
-                app.logger.info("[create_app] Production environment – schema managed by migrations")
+                    db.session.rollback()
+                except Exception:
+                    pass
+                db.engine.dispose()
+        else:
+            app.logger.info("[create_app] Production environment – schema managed by migrations")
 
     return app
 
