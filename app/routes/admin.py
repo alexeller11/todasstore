@@ -18,7 +18,8 @@ por padrao (falha fechada), em vez de ficar aberta para qualquer pessoa.
 """
 import os
 
-from flask import Blueprint, current_app, request, jsonify, render_template_string
+from flask import Blueprint, current_app, request, jsonify, render_template, render_template_string
+from app.constants import ADMIN_AUTH_ERROR, ADMIN_CONFIRMATION_MISSING, ADMIN_RESET_SUCCESS
 from sqlalchemy import text, inspect
 
 from app.extensions import db, csrf
@@ -39,7 +40,12 @@ def _autenticado():
         # Em producao sem token configurado, bloqueia por seguranca.
         return not em_producao
 
-    recebido = request.args.get("token", "")
+    # Prefer token via Authorization header (Bearer <token>)
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        recebido = auth_header.split(" ", 1)[1]
+    else:
+        recebido = request.args.get("token", "")
     if len(recebido) != len(esperado):
         return False
     return all(a == b for a, b in zip(recebido, esperado))
@@ -62,7 +68,7 @@ def sync_schema():
     Equivalente idempotente da migration 0002_add_descricao_visual_e_versao_conteudo.
     Compativel com PostgreSQL (producao) e SQLite (dev/test)."""
     if not _autenticado():
-        return jsonify({"ok": False, "erro": "token ausente ou invalido"}), 403
+        return jsonify({"ok": False, "erro": ADMIN_AUTH_ERROR}), 403
 
     relatorio = []
     try:
@@ -201,14 +207,14 @@ def reset_dados():
     acontece no POST com `confirmar=RESETAR`, para nao rodar sozinha se o link
     (com o token) for aberto sem querer por alguem ou por um preview de link."""
     if not _autenticado():
-        return jsonify({"ok": False, "erro": "token ausente ou invalido"}), 403
+        return jsonify({"ok": False, "erro": ADMIN_AUTH_ERROR}), 403
 
     if request.method == "GET":
         token = request.args.get("token", "")
-        return render_template_string(_PAGINA_CONFIRMACAO, token=token)
+        return render_template('admin/reset_confirm.html', token=token)
 
     if request.form.get("confirmar") != "RESETAR":
-        return jsonify({"ok": False, "erro": "confirmacao ausente"}), 400
+        return jsonify({"ok": False, "erro": ADMIN_CONFIRMATION_MISSING}), 400
 
     relatorio = []
     try:

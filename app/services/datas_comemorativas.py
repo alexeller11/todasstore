@@ -34,7 +34,9 @@ PERIODOS_LIQUIDACAO = [
 ]
 
 
-def estacao_do_ano(data):
+from typing import List
+
+def estacao_do_ano(data: date) -> str:
     """Retorna a estação do ano no Hemisfério Sul (Brasil) para a data informada."""
     m, d = data.month, data.day
     if (m == 12 and d >= 21) or m in (1, 2) or (m == 3 and d <= 20):
@@ -46,7 +48,7 @@ def estacao_do_ano(data):
     return "Primavera"
 
 
-def datas_proximas(data, dias_janela=10):
+def datas_proximas(data: date, dias_janela: int = 10) -> List[str]:
     """Retorna datas comemorativas dentro de uma janela de dias antes/depois da data (para dar
     contexto mesmo quando a data em si não é comemorativa, ex: 'Black Friday está chegando')."""
     from datetime import timedelta
@@ -55,10 +57,11 @@ def datas_proximas(data, dias_janela=10):
     return datas_da_semana(inicio, fim)
 
 
-def datas_da_semana(data_inicio, data_fim):
+def datas_da_semana(data_inicio: date, data_fim: date) -> List[str]:
     """Retorna lista de nomes de datas comemorativas que caem dentro do intervalo da semana."""
     encontradas = []
     cursor = data_inicio
+    from datetime import timedelta
     while cursor <= data_fim:
         chave = (cursor.month, cursor.day)
         if chave in DATAS_FIXAS:
@@ -66,7 +69,7 @@ def datas_da_semana(data_inicio, data_fim):
         moveis_ano = DATAS_MOVEIS.get(cursor.year, {})
         if chave in moveis_ano:
             encontradas.append(moveis_ano[chave])
-        cursor = cursor.fromordinal(cursor.toordinal() + 1)
+        cursor += timedelta(days=1)
 
     for (m_ini, d_ini), (m_fim, d_fim), nome in PERIODOS_LIQUIDACAO:
         inicio_periodo = date(data_inicio.year, m_ini, d_ini)

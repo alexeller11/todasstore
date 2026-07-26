@@ -6,7 +6,8 @@ load_dotenv(os.path.join(basedir, ".env"))
 
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-troque-em-producao")
+    # SECRET_KEY must be provided via env in production; raise if missing
+    SECRET_KEY = os.environ["SECRET_KEY"]
 
     # Banco de dados: usa PostgreSQL no Render (DATABASE_URL) ou SQLite localmente
     _database_url = os.environ.get("DATABASE_URL", "")

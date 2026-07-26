@@ -6,7 +6,8 @@ nunca diretamente - assim é fácil trocar de modelo/provedor no futuro.
 """
 import json
 import os
-from groq import Groq
+# Replaced direct Groq import with reusable client wrapper
+from .groq_client import GroqClient
 from flask import current_app
 
 
@@ -16,7 +17,7 @@ def _get_client():
         raise RuntimeError(
             "A chave da IA (GROQ_API_KEY) não está configurada! Por favor, adicione-a no arquivo .env."
         )
-    return Groq(api_key=api_key, max_retries=2, timeout=20.0)
+    return GroqClient(api_key=api_key, max_retries=2, timeout=20.0)
 
 
 def _chamar_modelo(mensagens, json_mode=True, temperatura=0.8):
