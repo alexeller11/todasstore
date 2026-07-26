@@ -41,6 +41,12 @@
     </select>
     <textarea name="conteudo" class="form-control rounded-3 mb-2" rows="2" placeholder="Descreva a ideia"></textarea>
     <textarea name="legenda" class="form-control rounded-3 mb-2" rows="2" placeholder="Legenda (opcional)"></textarea>
+    <!-- Upload image to generate caption/hashtags via AI -->
+    <div class="mb-2">
+      <label class="form-label">Imagem para IA (opcional):</label>
+      <input type="file" name="ia_image" accept="image/*" class="form-control" id="ia-image-input">
+      <button type="button" class="btn btn-app btn-secundario mt-2" id="gerar-ia-btn">Gerar legenda e hashtags com IA</button>
+    </div>
     <input type="text" name="cta" class="form-control rounded-3 mb-2" placeholder="CTA (opcional)">
     <input type="text" name="tags" class="form-control rounded-3 mb-3" placeholder="Tags separadas por vírgula">
     <button class="btn-app btn-primario" type="submit"><i class="bi bi-save"></i> Salvar</button>
@@ -69,4 +75,25 @@
 {% else %}
 <p class="texto-suave text-center mt-4">Nenhuma ideia salva ainda. Suas ideias favoritas aparecerão aqui!</p>
 {% endfor %}
+{% block script_extra %}
+<script>
+document.getElementById('gerar-ia-btn').addEventListener('click', async function(){
+    const input = document.getElementById('ia-image-input');
+    if (!input.files.length) {alert('Selecione uma imagem primeiro.'); return;}
+    const formData = new FormData();
+    formData.append('image', input.files[0]);
+    const resp = await fetch('/ai/content/from-image', {method: 'POST', body: formData});
+    const json = await resp.json();
+    if (json.ok) {
+        document.querySelector('textarea[name="legenda"]').value = json.data.legenda || '';
+        const tagsField = document.querySelector('input[name="tags"]');
+        if (tagsField && json.data.hashtags) {
+            tagsField.value = json.data.hashtags.join(' ');
+        }
+    } else {
+        alert(json.erro || 'Erro ao gerar conteúdo.');
+    }
+});
+</script>
+{% endblock %}
 {% endblock %}

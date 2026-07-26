@@ -32,6 +32,9 @@ def create_app(config_class=Config):
     app.register_blueprint(configuracoes.bp)
     app.register_blueprint(estatisticas.bp)
     # admin blueprint removed for single‑store version
+    from app.routes import campaigns, ai_content
+    app.register_blueprint(campaigns.bp)
+    app.register_blueprint(ai_content.bp)
 
     @app.route("/sw.js")
     def service_worker():
