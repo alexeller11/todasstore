@@ -15,7 +15,8 @@ class Config:
         # Render entrega a URL no formato antigo; SQLAlchemy exige "postgresql://"
         _database_url = _database_url.replace("postgres://", "postgresql://", 1)
 
-    SQLALCHEMY_DATABASE_URI = _database_url or f"sqlite:///{os.path.join(basedir, 'instance', 'todasstore.db')}"
+    # For a single‑store implementation we always use SQLite (local file)
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{os.path.join(basedir, 'instance', 'todasstore.db')}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # IA - Groq
@@ -41,3 +42,11 @@ class Config:
         "Mostrar look",
         "Mostrar promoção",
     ]
+
+    # Perfil estático da loja (usado quando não há onboarding)
+    STORE_PROFILE = {
+        "nome": "Minha Loja",
+        "segmento": "Moda Feminina",
+        "diferenciais": "",
+        "dores_do_publico": "",
+    }

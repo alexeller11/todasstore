@@ -31,7 +31,7 @@ def create_app(config_class=Config):
     app.register_blueprint(concorrentes.bp)
     app.register_blueprint(configuracoes.bp)
     app.register_blueprint(estatisticas.bp)
-    app.register_blueprint(admin.bp)
+    # admin blueprint removed for single‑store version
 
     @app.route("/sw.js")
     def service_worker():
